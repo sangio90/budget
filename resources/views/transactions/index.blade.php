@@ -37,6 +37,81 @@
         </div>
     </div>
 
+    {{-- Riepilogo Fiscale --}}
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+        <div class="px-5 py-4 border-b border-slate-100">
+            <h2 class="font-semibold text-slate-800">Riepilogo Fiscale {{ $anno }}</h2>
+            <p class="text-xs text-slate-400 mt-0.5">Basato sulle entrate/uscite/F24 dell'anno · IVA 22% · scaglioni IRPEF vigenti</p>
+        </div>
+        <div class="px-5 py-4 space-y-4">
+
+            {{-- Calcolo base --}}
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm">
+                <div class="bg-slate-50 rounded-xl p-3">
+                    <div class="text-xs text-slate-400 mb-0.5">Entrate</div>
+                    <div class="font-semibold text-slate-700">{{ number_format($entrateAnno, 2, ',', '.') }} €</div>
+                </div>
+                <div class="bg-slate-50 rounded-xl p-3">
+                    <div class="text-xs text-slate-400 mb-0.5">− Stipendi</div>
+                    <div class="font-semibold text-red-500">{{ number_format($usciteAnno, 2, ',', '.') }} €</div>
+                </div>
+                <div class="bg-slate-50 rounded-xl p-3">
+                    <div class="text-xs text-slate-400 mb-0.5">− F24 pagati</div>
+                    <div class="font-semibold text-amber-600">{{ number_format($f24Anno, 2, ',', '.') }} €</div>
+                </div>
+                <div class="bg-indigo-50 rounded-xl p-3">
+                    <div class="text-xs text-indigo-400 mb-0.5">Gran totale</div>
+                    <div class="font-bold text-indigo-700">{{ number_format($fiscale['granTotale'], 2, ',', '.') }} €</div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3 text-sm">
+                <div class="bg-slate-50 rounded-xl p-3">
+                    <div class="text-xs text-slate-400 mb-0.5">− IVA da pagare (22% entrate)</div>
+                    <div class="font-semibold text-red-500">{{ number_format($fiscale['iva'], 2, ',', '.') }} €</div>
+                </div>
+                <div class="bg-amber-50 rounded-xl p-3">
+                    <div class="text-xs text-amber-600 mb-0.5">Imponibile IRPEF</div>
+                    <div class="font-bold text-amber-700">{{ number_format($fiscale['imponibile'], 2, ',', '.') }} €</div>
+                    <div class="text-xs text-slate-400 mt-0.5">gran totale − IVA</div>
+                </div>
+            </div>
+
+            {{-- Due scenari IRPEF --}}
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+
+                {{-- Scenario 1: senza ritenuta --}}
+                <div class="border border-slate-200 rounded-xl p-4 space-y-2">
+                    <div class="text-xs font-semibold text-slate-500 uppercase tracking-wide">Scenario A · senza ritenuta d'acconto</div>
+                    <div class="flex justify-between text-sm">
+                        <span class="text-slate-500">IRPEF dovuta</span>
+                        <span class="font-semibold text-red-500">{{ number_format($fiscale['irpef1'], 2, ',', '.') }} €</span>
+                    </div>
+                    <div class="border-t border-slate-100 pt-2 flex justify-between text-sm">
+                        <span class="text-slate-600 font-medium">Netto stimato</span>
+                        <span class="font-bold {{ $fiscale['netto1'] >= 0 ? 'text-emerald-600' : 'text-red-600' }}">{{ number_format($fiscale['netto1'], 2, ',', '.') }} €</span>
+                    </div>
+                </div>
+
+                {{-- Scenario 2: con ritenuta 20% --}}
+                <div class="border border-emerald-200 bg-emerald-50/30 rounded-xl p-4 space-y-2">
+                    <div class="text-xs font-semibold text-emerald-600 uppercase tracking-wide">Scenario B · con ritenuta d'acconto 20%</div>
+                    <div class="flex justify-between text-sm">
+                        <span class="text-slate-500">IRPEF residua da versare</span>
+                        <span class="font-semibold text-red-500">{{ number_format($fiscale['irpef2'], 2, ',', '.') }} €</span>
+                    </div>
+                    <div class="border-t border-emerald-100 pt-2 flex justify-between text-sm">
+                        <span class="text-slate-600 font-medium">Netto vero</span>
+                        <span class="font-bold {{ $fiscale['netto2'] >= 0 ? 'text-emerald-600' : 'text-red-600' }}">{{ number_format($fiscale['netto2'], 2, ',', '.') }} €</span>
+                    </div>
+                    <div class="text-xs text-slate-400">Il 20% di ritenuta d'acconto è già stato trattenuto alla fonte</div>
+                </div>
+            </div>
+
+            <p class="text-xs text-slate-400">* Stima indicativa. Deduci spese deducibili (ufficio, software, ecc.) dall'imponibile per il calcolo definitivo.</p>
+        </div>
+    </div>
+
     {{-- Riepilogo mensile --}}
     @if($mensili->count())
     <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
