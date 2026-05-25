@@ -50,10 +50,29 @@
                 </div>
             </div>
 
-            <div>
+            <div class="relative" x-data="noteAc">
                 <label class="block text-xs font-medium text-slate-600 mb-1.5">Note (opzionale)</label>
-                <input type="text" name="note" placeholder="Descrizione aggiuntiva..." value="{{ old('note') }}"
+                <input type="text" name="note" placeholder="Descrizione aggiuntiva..."
+                    value="{{ old('note') }}"
+                    x-model="noteInput"
+                    @input="onInput()"
+                    @keydown.arrow-down.prevent="moveDown()"
+                    @keydown.arrow-up.prevent="moveUp()"
+                    @keydown.enter.prevent="selectHighlighted()"
+                    @keydown.escape="close()"
+                    @focus="onInput()"
+                    @click.outside="close()"
+                    autocomplete="off"
                     class="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                <ul x-show="open && suggestions.length"
+                    class="absolute z-20 left-0 right-0 mt-1 bg-white border border-slate-200 rounded-xl shadow-lg overflow-hidden text-sm">
+                    <template x-for="(s, i) in suggestions" :key="s">
+                        <li @mousedown.prevent="select(s)"
+                            :class="i === highlighted ? 'bg-indigo-50 text-indigo-700' : 'text-slate-700 hover:bg-slate-50'"
+                            class="px-4 py-2.5 cursor-pointer"
+                            x-text="s"></li>
+                    </template>
+                </ul>
             </div>
 
             <button type="submit"
