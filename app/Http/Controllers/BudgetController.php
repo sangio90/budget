@@ -11,7 +11,16 @@ class BudgetController extends Controller
     public function index()
     {
         $categories = BudgetCategory::orderBy('sort_order')->orderBy('categoria')->get();
-        return view('budget.index', compact('categories'));
+
+        $notePerCategoria = BudgetExpense::where('user_id', auth()->id())
+            ->whereNotNull('note')->where('note', '!=', '')
+            ->selectRaw('budget_category_id, note')
+            ->distinct()
+            ->get()
+            ->groupBy('budget_category_id')
+            ->map(fn($rows) => $rows->pluck('note')->sort()->values());
+
+        return view('budget.index', compact('categories', 'notePerCategoria'));
     }
 
     public function store(Request $request)
