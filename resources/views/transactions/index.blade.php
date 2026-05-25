@@ -105,7 +105,7 @@
             {{-- Causale con autocomplete --}}
             <div class="relative">
                 <label class="block text-xs font-medium text-slate-600 mb-1.5">Causale</label>
-                <input type="text" name="causale" required placeholder="Es. Umberto, ILT, iva 1 trimestre..."
+                <input type="text" name="causale" required placeholder="Es. Emanuele, ILT, iva 1 trimestre..."
                     value="{{ old('causale') }}"
                     x-model="causale"
                     @input.debounce.200ms="filterSuggest()"
@@ -158,7 +158,8 @@
             <select name="mese" onchange="this.form.submit()" class="text-sm border border-slate-200 rounded-lg px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
                 <option value="">Tutti i mesi</option>
                 @foreach(range(1,12) as $m)
-                    <option value="{{ $m }}" {{ $mese == $m ? 'selected' : '' }}>{{ \Carbon\Carbon::create()->month($m)->translatedFormat('F') }}</option>
+                    @php $nomiMesi = ['','Gennaio','Febbraio','Marzo','Aprile','Maggio','Giugno','Luglio','Agosto','Settembre','Ottobre','Novembre','Dicembre']; @endphp
+                    <option value="{{ $m }}" {{ $mese == $m ? 'selected' : '' }}>{{ $nomiMesi[$m] }}</option>
                 @endforeach
             </select>
             <select name="tipo" onchange="this.form.submit()" class="text-sm border border-slate-200 rounded-lg px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
