@@ -81,7 +81,7 @@ function budgetApp() {
 
         filterSubcategories() {
             this.filteredItems = this.allItems.filter(i => i.categoria === this.selectedCategoria);
-            this.selectedItem = '';
+            this.selectedItem = this.filteredItems.length ? this.filteredItems[0].id : '';
         },
     }
 }
