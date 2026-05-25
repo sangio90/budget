@@ -6,6 +6,15 @@
             <h1 class="text-2xl font-bold text-slate-900">Entrate / Uscite</h1>
             <p class="text-sm text-slate-500 mt-0.5">Stipendi, F24 e incassi</p>
         </div>
+        <form method="GET" action="{{ route('transactions.index') }}">
+            @if($mese) <input type="hidden" name="mese" value="{{ $mese }}"> @endif
+            @if($tipo)  <input type="hidden" name="tipo"  value="{{ $tipo }}">  @endif
+            <select name="anno" onchange="this.form.submit()" class="text-sm font-semibold border border-slate-200 rounded-xl pl-4 pr-9 py-2.5 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                @foreach([2024, 2025, 2026] as $a)
+                    <option value="{{ $a }}" {{ $anno == $a ? 'selected' : '' }}>{{ $a }}</option>
+                @endforeach
+            </select>
+        </form>
     </div>
 
     {{-- Saldo e KPI --}}
@@ -231,11 +240,7 @@
     {{-- Filtri lista --}}
     <div class="flex gap-2 flex-wrap">
         <form method="GET" action="{{ route('transactions.index') }}" class="flex gap-2 flex-wrap w-full sm:w-auto">
-            <select name="anno" onchange="this.form.submit()" class="text-sm border border-slate-200 rounded-lg pl-3 pr-8 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 min-w-[5rem]">
-                @foreach([2024, 2025, 2026] as $a)
-                    <option value="{{ $a }}" {{ $anno == $a ? 'selected' : '' }}>{{ $a }}</option>
-                @endforeach
-            </select>
+            <input type="hidden" name="anno" value="{{ $anno }}">
             <select name="mese" onchange="this.form.submit()" class="text-sm border border-slate-200 rounded-lg pl-3 pr-8 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 min-w-[10rem]">
                 <option value="">Tutti i mesi</option>
                 @foreach(range(1,12) as $m)
