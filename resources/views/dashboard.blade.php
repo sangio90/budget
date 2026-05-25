@@ -13,28 +13,42 @@
         </span>
     </div>
 
-    <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
-        <div class="divide-y divide-slate-50">
-            @foreach($righe as $cat => $r)
-                @php
-                    $bar = $r['perc'] > 90 ? 'bg-red-500' : ($r['perc'] > 70 ? 'bg-amber-400' : 'bg-indigo-500');
-                @endphp
-                <div class="px-5 py-3.5">
-                    <div class="flex items-center justify-between mb-2">
-                        <span class="text-sm font-medium text-slate-800">{{ $cat }}</span>
-                        <div class="text-right">
-                            <span class="text-sm font-semibold {{ $r['perc'] > 90 ? 'text-red-500' : 'text-slate-700' }}">
-                                {{ number_format($r['speso'], 0, ',', '.') }} €
-                            </span>
-                            <span class="text-xs text-slate-400"> / {{ number_format($r['budgetMensile'], 0, ',', '.') }} €</span>
-                        </div>
-                    </div>
-                    <div class="h-2 bg-slate-100 rounded-full overflow-hidden">
-                        <div class="{{ $bar }} h-2 rounded-full" style="width: {{ $r['perc'] }}%"></div>
-                    </div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+        @foreach($righe as $cat => $r)
+            @php
+                $barM  = $r['perc']     > 90 ? 'bg-red-500'  : ($r['perc']     > 70 ? 'bg-amber-400' : 'bg-emerald-500');
+                $barA  = $r['percAnno'] > 90 ? 'bg-red-400'  : ($r['percAnno'] > 70 ? 'bg-amber-300' : 'bg-emerald-400');
+                $textM = $r['perc']     > 90 ? 'text-red-500': ($r['perc']     > 70 ? 'text-amber-500': 'text-emerald-600');
+                $url   = route('budget.spese', ['anno' => $anno, 'mese' => $mese, 'categoria' => $cat]);
+            @endphp
+            <a href="{{ $url }}"
+                class="bg-white rounded-2xl shadow-sm border border-slate-100 px-5 py-4 hover:shadow-md hover:border-slate-200 transition-all block">
+
+                <div class="flex items-start justify-between mb-3">
+                    <span class="text-sm font-semibold text-slate-800 leading-tight">{{ $cat }}</span>
+                    <span class="text-xs font-bold {{ $textM }} ml-2 flex-shrink-0">{{ $r['perc'] }}%</span>
                 </div>
-            @endforeach
-        </div>
+
+                {{-- Barra mensile --}}
+                <div class="h-2.5 bg-slate-100 rounded-full overflow-hidden mb-1">
+                    <div class="{{ $barM }} h-2.5 rounded-full transition-all" style="width: {{ $r['perc'] }}%"></div>
+                </div>
+                <div class="flex items-baseline justify-between mb-3">
+                    <span class="text-lg font-bold text-slate-800">{{ number_format($r['speso'], 0, ',', '.') }} €</span>
+                    <span class="text-xs text-slate-400">/ {{ number_format($r['budgetMensile'], 0, ',', '.') }} € mese</span>
+                </div>
+
+                {{-- Barra annuale --}}
+                <div class="h-1.5 bg-slate-100 rounded-full overflow-hidden mb-1">
+                    <div class="{{ $barA }} h-1.5 rounded-full transition-all" style="width: {{ $r['percAnno'] }}%"></div>
+                </div>
+                <div class="flex items-baseline justify-between">
+                    <span class="text-xs text-slate-500 font-medium">{{ number_format($r['spesoAnno'], 0, ',', '.') }} €</span>
+                    <span class="text-xs text-slate-400">/ {{ number_format($r['budgetAnnuale'], 0, ',', '.') }} € anno</span>
+                </div>
+
+            </a>
+        @endforeach
     </div>
 
 </div>
