@@ -51,9 +51,11 @@ class TransactionController extends Controller
             ->groupBy('tipo')
             ->map(fn($g) => $g->pluck('causale')->unique()->values());
 
+        $fiscale = $this->calcolaFiscale($entrateAnno, $usciteAnno, $f24Anno);
+
         return view('transactions.index', compact(
             'transactions', 'saldoTotale', 'entrateAnno', 'usciteAnno', 'f24Anno',
-            'mensili', 'causaliSuggerite', 'anno', 'mese', 'tipo'
+            'mensili', 'causaliSuggerite', 'anno', 'mese', 'tipo', 'fiscale'
         ));
     }
 
@@ -77,6 +79,31 @@ class TransactionController extends Controller
         abort_unless($transaction->user_id === auth()->id(), 403);
         $transaction->delete();
         return back()->with('success', 'Transazione eliminata.');
+    }
+
+    private function calcolaFiscale(float $entrate, float $uscite, float $f24): array
+    {
+        $granTotale  = $entrate - $uscite - $f24;
+        $iva         = $entrate * 0.22;
+        $imponibile  = $granTotale - $iva;
+
+        $irpef = function (float $base): float {
+            if ($base <= 0)      return 0;
+            if ($base <= 28000)  return $base * 0.28;
+            if ($base <= 50000)  return 28000 * 0.28 + ($base - 28000) * 0.33;
+            return 28000 * 0.28 + 22000 * 0.33 + ($base - 50000) * 0.43;
+        };
+
+        // Scenario 1: IRPEF piena sull'imponibile
+        $irpef1 = $irpef($imponibile);
+        $netto1  = $imponibile - $irpef1;
+
+        // Scenario 2: con ritenuta d'acconto 20% già trattenuta alla fonte
+        $lordo   = $imponibile > 0 ? $imponibile / 0.8 : 0;
+        $irpef2  = max(0, $irpef($lordo) - $lordo * 0.20);
+        $netto2  = $imponibile - $irpef2;
+
+        return compact('granTotale', 'iva', 'imponibile', 'irpef1', 'netto1', 'irpef2', 'netto2');
     }
 
     public function causaliJson(Request $request)

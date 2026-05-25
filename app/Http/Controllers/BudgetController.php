@@ -34,7 +34,9 @@ class BudgetController extends Controller
 
         BudgetExpense::create(['user_id' => auth()->id()] + $validated);
 
-        return redirect()->route('budget.spese')->with('success', 'Spesa inserita correttamente.');
+        return redirect()->route('budget.index')
+            ->with('success', 'Spesa inserita correttamente.')
+            ->with('last_category_id', $validated['budget_category_id']);
     }
 
     public function spese(Request $request)
