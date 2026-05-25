@@ -17,7 +17,7 @@
     <form method="GET" action="{{ route('budget.spese') }}" class="bg-white rounded-2xl shadow-sm border border-slate-100 px-5 py-4 flex flex-wrap gap-3 items-end">
         <div>
             <label class="block text-xs font-medium text-slate-500 mb-1">Anno</label>
-            <select name="anno" class="border border-slate-200 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            <select name="anno" class="border border-slate-200 rounded-lg px-3 py-2 pr-8 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
                 @foreach([2024, 2025, 2026] as $a)
                     <option value="{{ $a }}" {{ $anno == $a ? 'selected' : '' }}>{{ $a }}</option>
                 @endforeach
@@ -25,7 +25,7 @@
         </div>
         <div>
             <label class="block text-xs font-medium text-slate-500 mb-1">Mese</label>
-            <select name="mese" class="border border-slate-200 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            <select name="mese" class="border border-slate-200 rounded-lg px-3 py-2 pr-8 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 min-w-[9rem]">
                 <option value="">Tutti</option>
                 @foreach(range(1,12) as $m)
                     <option value="{{ $m }}" {{ $mese == $m ? 'selected' : '' }}>{{ \Carbon\Carbon::create()->month($m)->translatedFormat('F') }}</option>
@@ -34,7 +34,7 @@
         </div>
         <div>
             <label class="block text-xs font-medium text-slate-500 mb-1">Categoria</label>
-            <select name="categoria" class="border border-slate-200 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            <select name="categoria" class="border border-slate-200 rounded-lg px-3 py-2 pr-8 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 min-w-[9rem]">
                 <option value="">Tutte</option>
                 @foreach($categorie as $cat)
                     <option value="{{ $cat }}" {{ $categoriaFiltro == $cat ? 'selected' : '' }}>{{ $cat }}</option>
