@@ -30,7 +30,9 @@ class TransactionController extends Controller
         $entrateAnno = Transaction::where('user_id', auth()->id())
             ->whereYear('data', $anno)->where('tipo', 'entrata')->sum('importo');
         $usciteAnno = Transaction::where('user_id', auth()->id())
-            ->whereYear('data', $anno)->whereIn('tipo', ['uscita', 'f24'])->sum('importo');
+            ->whereYear('data', $anno)->where('tipo', 'uscita')->sum('importo');
+        $f24Anno = Transaction::where('user_id', auth()->id())
+            ->whereYear('data', $anno)->where('tipo', 'f24')->sum('importo');
 
         $mensili = Transaction::where('user_id', auth()->id())
             ->whereYear('data', $anno)
@@ -50,7 +52,7 @@ class TransactionController extends Controller
             ->map(fn($g) => $g->pluck('causale')->unique()->values());
 
         return view('transactions.index', compact(
-            'transactions', 'saldoTotale', 'entrateAnno', 'usciteAnno',
+            'transactions', 'saldoTotale', 'entrateAnno', 'usciteAnno', 'f24Anno',
             'mensili', 'causaliSuggerite', 'anno', 'mese', 'tipo'
         ));
     }

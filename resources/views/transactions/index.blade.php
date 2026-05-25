@@ -9,9 +9,11 @@
     </div>
 
     {{-- Saldo e KPI --}}
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        @php $saldoColor = $saldoTotale >= 0 ? 'text-emerald-600' : 'text-red-600'; @endphp
-        <div class="bg-slate-900 text-white rounded-2xl p-5">
+    @php
+        $deltaAnno = $entrateAnno - ($usciteAnno + $f24Anno);
+    @endphp
+    <div class="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-5 gap-4">
+        <div class="col-span-2 sm:col-span-3 xl:col-span-1 bg-slate-900 text-white rounded-2xl p-5">
             <div class="text-xs font-medium text-slate-400 uppercase tracking-wide mb-1">Saldo Complessivo</div>
             <div class="text-3xl font-bold {{ $saldoTotale >= 0 ? 'text-emerald-400' : 'text-red-400' }}">{{ number_format($saldoTotale, 2, ',', '.') }} €</div>
             <div class="text-xs text-slate-500 mt-1">tutte le entrate - tutte le uscite</div>
@@ -21,8 +23,17 @@
             <div class="text-2xl font-bold text-emerald-600">{{ number_format($entrateAnno, 2, ',', '.') }} €</div>
         </div>
         <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-100">
-            <div class="text-xs font-medium text-slate-500 uppercase tracking-wide mb-1">Uscite + F24 {{ $anno }}</div>
+            <div class="text-xs font-medium text-slate-500 uppercase tracking-wide mb-1">Uscite {{ $anno }}</div>
             <div class="text-2xl font-bold text-red-500">{{ number_format($usciteAnno, 2, ',', '.') }} €</div>
+        </div>
+        <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-100">
+            <div class="text-xs font-medium text-slate-500 uppercase tracking-wide mb-1">F24 {{ $anno }}</div>
+            <div class="text-2xl font-bold text-amber-500">{{ number_format($f24Anno, 2, ',', '.') }} €</div>
+        </div>
+        <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-100">
+            <div class="text-xs font-medium text-slate-500 uppercase tracking-wide mb-1">Delta {{ $anno }}</div>
+            <div class="text-2xl font-bold {{ $deltaAnno >= 0 ? 'text-emerald-600' : 'text-red-600' }}">{{ ($deltaAnno >= 0 ? '+' : '') . number_format($deltaAnno, 2, ',', '.') }} €</div>
+            <div class="text-xs text-slate-400 mt-1">entrate − (uscite + F24)</div>
         </div>
     </div>
 
