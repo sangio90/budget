@@ -12,12 +12,7 @@
     @php
         $deltaAnno = $entrateAnno - ($usciteAnno + $f24Anno);
     @endphp
-    <div class="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-5 gap-4">
-        <div class="col-span-2 sm:col-span-3 xl:col-span-1 bg-slate-900 text-white rounded-2xl p-5">
-            <div class="text-xs font-medium text-slate-400 uppercase tracking-wide mb-1">Saldo Complessivo</div>
-            <div class="text-3xl font-bold whitespace-nowrap {{ $saldoTotale >= 0 ? 'text-emerald-400' : 'text-red-400' }}">{{ number_format($saldoTotale, 2, ',', '.') }} €</div>
-            <div class="text-xs text-slate-500 mt-1">tutte le entrate - tutte le uscite</div>
-        </div>
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
         <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-100">
             <div class="text-xs font-medium text-slate-500 uppercase tracking-wide mb-1">Entrate {{ $anno }}</div>
             <div class="text-2xl font-bold whitespace-nowrap text-emerald-600">{{ number_format($entrateAnno, 2, ',', '.') }} €</div>
