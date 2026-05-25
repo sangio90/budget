@@ -9,7 +9,7 @@
         <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700&display=swap" rel="stylesheet" />
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
-    <body class="font-sans antialiased bg-slate-50 text-slate-800">
+    <body class="font-sans antialiased bg-slate-50 text-slate-800 overflow-x-hidden">
 
         {{-- Mobile bottom nav + desktop sidebar --}}
         <div class="min-h-screen lg:flex">
