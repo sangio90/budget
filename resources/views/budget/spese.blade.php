@@ -17,7 +17,7 @@
     <form method="GET" action="{{ route('budget.spese') }}" class="bg-white rounded-2xl shadow-sm border border-slate-100 px-5 py-4 flex flex-wrap gap-3 items-end">
         <div>
             <label class="block text-xs font-medium text-slate-500 mb-1">Anno</label>
-            <select name="anno" class="border border-slate-200 rounded-lg px-3 py-2 pr-8 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            <select name="anno" onchange="this.form.submit()" class="border border-slate-200 rounded-lg px-3 py-2 pr-8 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
                 @foreach([2024, 2025, 2026] as $a)
                     <option value="{{ $a }}" {{ $anno == $a ? 'selected' : '' }}>{{ $a }}</option>
                 @endforeach
@@ -25,7 +25,7 @@
         </div>
         <div>
             <label class="block text-xs font-medium text-slate-500 mb-1">Mese</label>
-            <select name="mese" class="border border-slate-200 rounded-lg px-3 py-2 pr-8 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 min-w-[9rem]">
+            <select name="mese" onchange="this.form.submit()" class="border border-slate-200 rounded-lg px-3 py-2 pr-8 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 min-w-[9rem]">
                 <option value="">Tutti</option>
                 @foreach(range(1,12) as $m)
                     @php $nomiMesi = ['','Gennaio','Febbraio','Marzo','Aprile','Maggio','Giugno','Luglio','Agosto','Settembre','Ottobre','Novembre','Dicembre']; @endphp
@@ -35,16 +35,13 @@
         </div>
         <div>
             <label class="block text-xs font-medium text-slate-500 mb-1">Categoria</label>
-            <select name="categoria" class="border border-slate-200 rounded-lg px-3 py-2 pr-8 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 min-w-[9rem]">
+            <select name="categoria" onchange="this.form.submit()" class="border border-slate-200 rounded-lg px-3 py-2 pr-8 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 min-w-[9rem]">
                 <option value="">Tutte</option>
                 @foreach($categorie as $cat)
                     <option value="{{ $cat }}" {{ $categoriaFiltro == $cat ? 'selected' : '' }}>{{ $cat }}</option>
                 @endforeach
             </select>
         </div>
-        <button type="submit" class="bg-slate-800 hover:bg-slate-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition">
-            Filtra
-        </button>
         @if($categoriaFiltro || $mese != now()->month || $anno != now()->year)
             <a href="{{ route('budget.spese') }}" class="text-sm text-slate-400 hover:text-slate-600 py-2">Azzera</a>
         @endif
