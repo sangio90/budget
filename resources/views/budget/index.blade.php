@@ -104,5 +104,55 @@ function budgetApp() {
         },
     }
 }
+
+const _noteMap = @json($notePerCategoria);
+
+Alpine.data('noteAc', () => ({
+    noteInput: '{{ old('note') }}',
+    open: false,
+    highlighted: -1,
+    suggestions: [],
+
+    get categoryId() {
+        return document.querySelector('[name="budget_category_id"]')?.value || '';
+    },
+
+    allNotes() {
+        const id = this.categoryId;
+        return id && _noteMap[id] ? _noteMap[id] : [];
+    },
+
+    onInput() {
+        const q = this.noteInput.trim().toLowerCase();
+        const all = this.allNotes();
+        this.suggestions = q
+            ? all.filter(n => n.toLowerCase().includes(q))
+            : all;
+        this.open = this.suggestions.length > 0;
+        this.highlighted = -1;
+    },
+
+    close() { this.open = false; this.highlighted = -1; },
+
+    select(val) {
+        this.noteInput = val;
+        this.close();
+    },
+
+    selectHighlighted() {
+        if (this.highlighted >= 0 && this.suggestions[this.highlighted]) {
+            this.select(this.suggestions[this.highlighted]);
+        }
+    },
+
+    moveDown() {
+        if (!this.open) { this.onInput(); return; }
+        this.highlighted = Math.min(this.highlighted + 1, this.suggestions.length - 1);
+    },
+
+    moveUp() {
+        this.highlighted = Math.max(this.highlighted - 1, -1);
+    },
+}));
 </script>
 </x-app-layout>
