@@ -99,25 +99,25 @@
                 </div>
             </div>
 
-            <div class="relative" x-data="noteAc">
+            <div class="relative">
                 <label class="block text-xs font-medium text-slate-600 mb-1.5">Note (opzionale)</label>
                 <input type="text" name="note" placeholder="Descrizione aggiuntiva..."
                     value="{{ old('note') }}"
                     x-model="noteInput"
-                    @input="onInput()"
-                    @keydown.arrow-down.prevent="moveDown()"
-                    @keydown.arrow-up.prevent="moveUp()"
-                    @keydown.enter.prevent="selectHighlighted()"
-                    @keydown.escape="close()"
-                    @focus="onInput()"
-                    @click.outside="close()"
+                    @input="noteOnInput()"
+                    @keydown.arrow-down.prevent="noteMoveDown()"
+                    @keydown.arrow-up.prevent="noteMoveUp()"
+                    @keydown.enter.prevent="noteSelectHighlighted()"
+                    @keydown.escape="noteClose()"
+                    @focus="noteOnInput()"
+                    @click.outside="noteClose()"
                     autocomplete="off"
                     class="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                <ul x-show="open && suggestions.length"
+                <ul x-show="noteOpen && noteSuggestions.length"
                     class="absolute z-20 left-0 right-0 mt-1 bg-white border border-slate-200 rounded-xl shadow-lg overflow-hidden text-sm">
-                    <template x-for="(s, i) in suggestions" :key="s">
-                        <li @mousedown.prevent="select(s)"
-                            :class="i === highlighted ? 'bg-indigo-50 text-indigo-700' : 'text-slate-700 hover:bg-slate-50'"
+                    <template x-for="(s, i) in noteSuggestions" :key="s">
+                        <li @mousedown.prevent="noteSelect(s)"
+                            :class="i === noteHighlighted ? 'bg-indigo-50 text-indigo-700' : 'text-slate-700 hover:bg-slate-50'"
                             class="px-4 py-2.5 cursor-pointer"
                             x-text="s"></li>
                     </template>
@@ -153,7 +153,9 @@ function budgetApp() {
                 ->map(fn($c) => ['value' => $c, 'label' => ucwords(strtolower($c))])
         ),
 
-        // Category combobox state
+        noteMap: @json($notePerCategoria),
+
+        // Category combobox
         catQuery: '',
         catOpen: false,
         catHighlighted: -1,
@@ -173,10 +175,7 @@ function budgetApp() {
             this.itemQuery = '';
         },
 
-        catOnFocus() {
-            this.catOpen = this.categorieList.length > 0;
-        },
-
+        catOnFocus() { this.catOpen = this.categorieList.length > 0; },
         catClose() { this.catOpen = false; this.catHighlighted = -1; },
 
         catSelect(cat) {
@@ -184,8 +183,11 @@ function budgetApp() {
             this.selectedCategoria = cat.value;
             this.catClose();
             this.filterSubcategories();
-            this.itemQuery = '';
             this.selectedItem = '';
+            this.itemQuery = '';
+            if (this.filteredItems.length > 0) {
+                this.itemSelect(this.filteredItems[0]);
+            }
         },
 
         catConfirm() {
@@ -201,11 +203,9 @@ function budgetApp() {
             this.catHighlighted = Math.min(this.catHighlighted + 1, this.catFiltered.length - 1);
         },
 
-        catMoveUp() {
-            this.catHighlighted = Math.max(this.catHighlighted - 1, -1);
-        },
+        catMoveUp() { this.catHighlighted = Math.max(this.catHighlighted - 1, -1); },
 
-        // Item combobox state
+        // Item combobox
         itemQuery: '',
         itemOpen: false,
         itemHighlighted: -1,
@@ -222,16 +222,14 @@ function budgetApp() {
             this.selectedItem = '';
         },
 
-        itemOnFocus() {
-            this.itemOpen = this.filteredItems.length > 0;
-        },
-
+        itemOnFocus() { this.itemOpen = this.filteredItems.length > 0; },
         itemClose() { this.itemOpen = false; this.itemHighlighted = -1; },
 
         itemSelect(item) {
             this.itemQuery = item.nome;
             this.selectedItem = item.id;
             this.itemClose();
+            this.noteOnInput();
         },
 
         itemConfirm() {
@@ -247,15 +245,50 @@ function budgetApp() {
             this.itemHighlighted = Math.min(this.itemHighlighted + 1, this.itemFiltered.length - 1);
         },
 
-        itemMoveUp() {
-            this.itemHighlighted = Math.max(this.itemHighlighted - 1, -1);
-        },
+        itemMoveUp() { this.itemHighlighted = Math.max(this.itemHighlighted - 1, -1); },
 
         filterSubcategories() {
             this.filteredItems = this.allItems
                 .filter(i => i.categoria === this.selectedCategoria)
                 .sort((a, b) => a.nome.localeCompare(b.nome, 'it'));
         },
+
+        // Note autocomplete
+        noteInput: '{{ old('note') }}',
+        noteOpen: false,
+        noteHighlighted: -1,
+        noteSuggestions: [],
+
+        noteAllForItem() {
+            return this.selectedItem && this.noteMap[this.selectedItem]
+                ? this.noteMap[this.selectedItem]
+                : [];
+        },
+
+        noteOnInput() {
+            const q = this.noteInput.trim().toLowerCase();
+            const all = this.noteAllForItem();
+            this.noteSuggestions = q ? all.filter(n => n.toLowerCase().includes(q)) : all;
+            this.noteOpen = this.noteSuggestions.length > 0;
+            this.noteHighlighted = -1;
+        },
+
+        noteClose() { this.noteOpen = false; this.noteHighlighted = -1; },
+
+        noteSelect(val) { this.noteInput = val; this.noteClose(); },
+
+        noteSelectHighlighted() {
+            if (this.noteHighlighted >= 0 && this.noteSuggestions[this.noteHighlighted]) {
+                this.noteSelect(this.noteSuggestions[this.noteHighlighted]);
+            }
+        },
+
+        noteMoveDown() {
+            if (!this.noteOpen) { this.noteOnInput(); return; }
+            this.noteHighlighted = Math.min(this.noteHighlighted + 1, this.noteSuggestions.length - 1);
+        },
+
+        noteMoveUp() { this.noteHighlighted = Math.max(this.noteHighlighted - 1, -1); },
 
         init() {
             const oldId = @json(old('budget_category_id') ?? session('last_category_id'));
@@ -273,55 +306,5 @@ function budgetApp() {
         },
     }
 }
-
-const _noteMap = @json($notePerCategoria);
-
-Alpine.data('noteAc', () => ({
-    noteInput: '{{ old('note') }}',
-    open: false,
-    highlighted: -1,
-    suggestions: [],
-
-    get categoryId() {
-        return document.querySelector('[name="budget_category_id"]')?.value || '';
-    },
-
-    allNotes() {
-        const id = this.categoryId;
-        return id && _noteMap[id] ? _noteMap[id] : [];
-    },
-
-    onInput() {
-        const q = this.noteInput.trim().toLowerCase();
-        const all = this.allNotes();
-        this.suggestions = q
-            ? all.filter(n => n.toLowerCase().includes(q))
-            : all;
-        this.open = this.suggestions.length > 0;
-        this.highlighted = -1;
-    },
-
-    close() { this.open = false; this.highlighted = -1; },
-
-    select(val) {
-        this.noteInput = val;
-        this.close();
-    },
-
-    selectHighlighted() {
-        if (this.highlighted >= 0 && this.suggestions[this.highlighted]) {
-            this.select(this.suggestions[this.highlighted]);
-        }
-    },
-
-    moveDown() {
-        if (!this.open) { this.onInput(); return; }
-        this.highlighted = Math.min(this.highlighted + 1, this.suggestions.length - 1);
-    },
-
-    moveUp() {
-        this.highlighted = Math.max(this.highlighted - 1, -1);
-    },
-}));
 </script>
 </x-app-layout>

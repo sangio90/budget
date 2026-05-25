@@ -15,24 +15,24 @@
     <div class="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-5 gap-4">
         <div class="col-span-2 sm:col-span-3 xl:col-span-1 bg-slate-900 text-white rounded-2xl p-5">
             <div class="text-xs font-medium text-slate-400 uppercase tracking-wide mb-1">Saldo Complessivo</div>
-            <div class="text-3xl font-bold {{ $saldoTotale >= 0 ? 'text-emerald-400' : 'text-red-400' }}">{{ number_format($saldoTotale, 2, ',', '.') }} €</div>
+            <div class="text-3xl font-bold whitespace-nowrap {{ $saldoTotale >= 0 ? 'text-emerald-400' : 'text-red-400' }}">{{ number_format($saldoTotale, 2, ',', '.') }} €</div>
             <div class="text-xs text-slate-500 mt-1">tutte le entrate - tutte le uscite</div>
         </div>
         <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-100">
             <div class="text-xs font-medium text-slate-500 uppercase tracking-wide mb-1">Entrate {{ $anno }}</div>
-            <div class="text-2xl font-bold text-emerald-600">{{ number_format($entrateAnno, 2, ',', '.') }} €</div>
+            <div class="text-2xl font-bold whitespace-nowrap text-emerald-600">{{ number_format($entrateAnno, 2, ',', '.') }} €</div>
         </div>
         <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-100">
             <div class="text-xs font-medium text-slate-500 uppercase tracking-wide mb-1">Uscite {{ $anno }}</div>
-            <div class="text-2xl font-bold text-red-500">{{ number_format($usciteAnno, 2, ',', '.') }} €</div>
+            <div class="text-2xl font-bold whitespace-nowrap text-red-500">{{ number_format($usciteAnno, 2, ',', '.') }} €</div>
         </div>
         <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-100">
             <div class="text-xs font-medium text-slate-500 uppercase tracking-wide mb-1">F24 {{ $anno }}</div>
-            <div class="text-2xl font-bold text-amber-500">{{ number_format($f24Anno, 2, ',', '.') }} €</div>
+            <div class="text-2xl font-bold whitespace-nowrap text-amber-500">{{ number_format($f24Anno, 2, ',', '.') }} €</div>
         </div>
         <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-100">
             <div class="text-xs font-medium text-slate-500 uppercase tracking-wide mb-1">Delta {{ $anno }}</div>
-            <div class="text-2xl font-bold {{ $deltaAnno >= 0 ? 'text-emerald-600' : 'text-red-600' }}">{{ ($deltaAnno >= 0 ? '+' : '') . number_format($deltaAnno, 2, ',', '.') }} €</div>
+            <div class="text-2xl font-bold whitespace-nowrap {{ $deltaAnno >= 0 ? 'text-emerald-600' : 'text-red-600' }}">{{ ($deltaAnno >= 0 ? '+' : '') . number_format($deltaAnno, 2, ',', '.') }} €</div>
             <div class="text-xs text-slate-400 mt-1">entrate − (uscite + F24)</div>
         </div>
     </div>
@@ -49,30 +49,30 @@
             <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm">
                 <div class="bg-slate-50 rounded-xl p-3">
                     <div class="text-xs text-slate-400 mb-0.5">Entrate</div>
-                    <div class="font-semibold text-slate-700">{{ number_format($entrateAnno, 2, ',', '.') }} €</div>
+                    <div class="font-semibold whitespace-nowrap text-slate-700">{{ number_format($entrateAnno, 2, ',', '.') }} €</div>
                 </div>
                 <div class="bg-slate-50 rounded-xl p-3">
                     <div class="text-xs text-slate-400 mb-0.5">− Stipendi</div>
-                    <div class="font-semibold text-red-500">{{ number_format($usciteAnno, 2, ',', '.') }} €</div>
+                    <div class="font-semibold whitespace-nowrap text-red-500">{{ number_format($usciteAnno, 2, ',', '.') }} €</div>
                 </div>
                 <div class="bg-slate-50 rounded-xl p-3">
                     <div class="text-xs text-slate-400 mb-0.5">− F24 pagati</div>
-                    <div class="font-semibold text-amber-600">{{ number_format($f24Anno, 2, ',', '.') }} €</div>
+                    <div class="font-semibold whitespace-nowrap text-amber-600">{{ number_format($f24Anno, 2, ',', '.') }} €</div>
                 </div>
                 <div class="bg-indigo-50 rounded-xl p-3">
                     <div class="text-xs text-indigo-400 mb-0.5">Gran totale</div>
-                    <div class="font-bold text-indigo-700">{{ number_format($fiscale['granTotale'], 2, ',', '.') }} €</div>
+                    <div class="font-bold whitespace-nowrap text-indigo-700">{{ number_format($fiscale['granTotale'], 2, ',', '.') }} €</div>
                 </div>
             </div>
 
             <div class="grid grid-cols-2 gap-3 text-sm">
                 <div class="bg-slate-50 rounded-xl p-3">
                     <div class="text-xs text-slate-400 mb-0.5">− IVA da pagare (22% entrate)</div>
-                    <div class="font-semibold text-red-500">{{ number_format($fiscale['iva'], 2, ',', '.') }} €</div>
+                    <div class="font-semibold whitespace-nowrap text-red-500">{{ number_format($fiscale['iva'], 2, ',', '.') }} €</div>
                 </div>
                 <div class="bg-amber-50 rounded-xl p-3">
                     <div class="text-xs text-amber-600 mb-0.5">Imponibile IRPEF</div>
-                    <div class="font-bold text-amber-700">{{ number_format($fiscale['imponibile'], 2, ',', '.') }} €</div>
+                    <div class="font-bold whitespace-nowrap text-amber-700">{{ number_format($fiscale['imponibile'], 2, ',', '.') }} €</div>
                     <div class="text-xs text-slate-400 mt-0.5">gran totale − IVA</div>
                 </div>
             </div>
@@ -85,11 +85,11 @@
                     <div class="text-xs font-semibold text-slate-500 uppercase tracking-wide">Scenario A · senza ritenuta d'acconto</div>
                     <div class="flex justify-between text-sm">
                         <span class="text-slate-500">IRPEF dovuta</span>
-                        <span class="font-semibold text-red-500">{{ number_format($fiscale['irpef1'], 2, ',', '.') }} €</span>
+                        <span class="font-semibold whitespace-nowrap text-red-500">{{ number_format($fiscale['irpef1'], 2, ',', '.') }} €</span>
                     </div>
                     <div class="border-t border-slate-100 pt-2 flex justify-between text-sm">
                         <span class="text-slate-600 font-medium">Netto stimato</span>
-                        <span class="font-bold {{ $fiscale['netto1'] >= 0 ? 'text-emerald-600' : 'text-red-600' }}">{{ number_format($fiscale['netto1'], 2, ',', '.') }} €</span>
+                        <span class="font-bold whitespace-nowrap {{ $fiscale['netto1'] >= 0 ? 'text-emerald-600' : 'text-red-600' }}">{{ number_format($fiscale['netto1'], 2, ',', '.') }} €</span>
                     </div>
                 </div>
 
@@ -98,11 +98,11 @@
                     <div class="text-xs font-semibold text-emerald-600 uppercase tracking-wide">Scenario B · con ritenuta d'acconto 20%</div>
                     <div class="flex justify-between text-sm">
                         <span class="text-slate-500">IRPEF residua da versare</span>
-                        <span class="font-semibold text-red-500">{{ number_format($fiscale['irpef2'], 2, ',', '.') }} €</span>
+                        <span class="font-semibold whitespace-nowrap text-red-500">{{ number_format($fiscale['irpef2'], 2, ',', '.') }} €</span>
                     </div>
                     <div class="border-t border-emerald-100 pt-2 flex justify-between text-sm">
                         <span class="text-slate-600 font-medium">Netto vero</span>
-                        <span class="font-bold {{ $fiscale['netto2'] >= 0 ? 'text-emerald-600' : 'text-red-600' }}">{{ number_format($fiscale['netto2'], 2, ',', '.') }} €</span>
+                        <span class="font-bold whitespace-nowrap {{ $fiscale['netto2'] >= 0 ? 'text-emerald-600' : 'text-red-600' }}">{{ number_format($fiscale['netto2'], 2, ',', '.') }} €</span>
                     </div>
                     <div class="text-xs text-slate-400">Il 20% di ritenuta d'acconto è già stato trattenuto alla fonte</div>
                 </div>
@@ -136,9 +136,9 @@
                         @endphp
                         <tr class="hover:bg-slate-50 transition">
                             <td class="px-5 py-3 font-medium text-slate-700">{{ $mesi[(int)$row->mese_num] }}</td>
-                            <td class="px-5 py-3 text-right text-emerald-600 font-medium">{{ number_format($row->entrate, 2, ',', '.') }} €</td>
-                            <td class="px-5 py-3 text-right text-red-500 font-medium">{{ number_format($row->uscite, 2, ',', '.') }} €</td>
-                            <td class="px-5 py-3 text-right font-semibold {{ $saldoM >= 0 ? 'text-emerald-600' : 'text-red-600' }}">{{ number_format($saldoM, 2, ',', '.') }} €</td>
+                            <td class="px-5 py-3 text-right text-emerald-600 font-medium whitespace-nowrap">{{ number_format($row->entrate, 2, ',', '.') }} €</td>
+                            <td class="px-5 py-3 text-right text-red-500 font-medium whitespace-nowrap">{{ number_format($row->uscite, 2, ',', '.') }} €</td>
+                            <td class="px-5 py-3 text-right font-semibold whitespace-nowrap {{ $saldoM >= 0 ? 'text-emerald-600' : 'text-red-600' }}">{{ number_format($saldoM, 2, ',', '.') }} €</td>
                         </tr>
                     @endforeach
                 </tbody>
@@ -235,20 +235,20 @@
 
     {{-- Filtri lista --}}
     <div class="flex gap-2 flex-wrap">
-        <form method="GET" action="{{ route('transactions.index') }}" class="flex gap-2 flex-wrap">
-            <select name="anno" onchange="this.form.submit()" class="text-sm border border-slate-200 rounded-lg px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
+        <form method="GET" action="{{ route('transactions.index') }}" class="flex gap-2 flex-wrap w-full sm:w-auto">
+            <select name="anno" onchange="this.form.submit()" class="text-sm border border-slate-200 rounded-lg pl-3 pr-8 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 min-w-[5rem]">
                 @foreach([2024, 2025, 2026] as $a)
                     <option value="{{ $a }}" {{ $anno == $a ? 'selected' : '' }}>{{ $a }}</option>
                 @endforeach
             </select>
-            <select name="mese" onchange="this.form.submit()" class="text-sm border border-slate-200 rounded-lg px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            <select name="mese" onchange="this.form.submit()" class="text-sm border border-slate-200 rounded-lg pl-3 pr-8 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 min-w-[10rem]">
                 <option value="">Tutti i mesi</option>
                 @foreach(range(1,12) as $m)
                     @php $nomiMesi = ['','Gennaio','Febbraio','Marzo','Aprile','Maggio','Giugno','Luglio','Agosto','Settembre','Ottobre','Novembre','Dicembre']; @endphp
                     <option value="{{ $m }}" {{ $mese == $m ? 'selected' : '' }}>{{ $nomiMesi[$m] }}</option>
                 @endforeach
             </select>
-            <select name="tipo" onchange="this.form.submit()" class="text-sm border border-slate-200 rounded-lg px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            <select name="tipo" onchange="this.form.submit()" class="text-sm border border-slate-200 rounded-lg pl-3 pr-8 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 min-w-[8rem]">
                 <option value="">Tutti i tipi</option>
                 <option value="entrata" {{ $tipo == 'entrata' ? 'selected' : '' }}>Entrate</option>
                 <option value="uscita" {{ $tipo == 'uscita' ? 'selected' : '' }}>Uscite</option>
@@ -289,7 +289,7 @@
                                 <span class="text-xs px-2 py-1 rounded-full font-medium {{ $badge }}">{{ strtoupper($t->tipo) }}</span>
                             </td>
                             <td class="px-5 py-3 font-medium text-slate-700">{{ $t->causale }}</td>
-                            <td class="px-5 py-3 text-right font-semibold {{ $amtColor }}">{{ $sign }}{{ number_format($t->importo, 2, ',', '.') }} €</td>
+                            <td class="px-5 py-3 text-right font-semibold whitespace-nowrap {{ $amtColor }}">{{ $sign }}{{ number_format($t->importo, 2, ',', '.') }} €</td>
                             <td class="px-5 py-3 text-slate-400 text-xs max-w-xs truncate">{{ $t->note }}</td>
                             <td class="px-5 py-3 text-right">
                                 <form method="POST" action="{{ route('transactions.destroy', $t) }}" onsubmit="return confirm('Eliminare questo movimento?')">
@@ -321,7 +321,7 @@
                             <div class="text-xs text-slate-400 mt-0.5">{{ $t->data->format('d/m/Y') }}{{ $t->note ? ' · ' . $t->note : '' }}</div>
                         </div>
                         <div class="flex items-center gap-2 flex-shrink-0">
-                            <span class="font-semibold text-sm {{ $amtColor }}">{{ $sign }}{{ number_format($t->importo, 2, ',', '.') }} €</span>
+                            <span class="font-semibold text-sm whitespace-nowrap {{ $amtColor }}">{{ $sign }}{{ number_format($t->importo, 2, ',', '.') }} €</span>
                             <form method="POST" action="{{ route('transactions.destroy', $t) }}" onsubmit="return confirm('Eliminare?')">
                                 @csrf @method('DELETE')
                                 <button type="submit" class="text-slate-300 hover:text-red-400 transition">
