@@ -34,7 +34,7 @@ class TransactionController extends Controller
 
         $mensili = Transaction::where('user_id', auth()->id())
             ->whereYear('data', $anno)
-            ->selectRaw("strftime('%m', data) as mese_num,
+            ->selectRaw("MONTH(data) as mese_num,
                 SUM(CASE WHEN tipo = 'entrata' THEN importo ELSE 0 END) as entrate,
                 SUM(CASE WHEN tipo IN ('uscita','f24') THEN importo ELSE 0 END) as uscite")
             ->groupBy('mese_num')
