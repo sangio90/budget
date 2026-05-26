@@ -51,5 +51,53 @@
         @endforeach
     </div>
 
+    {{-- Ultimi movimenti --}}
+    @if($ultimiMovimenti->isNotEmpty())
+    <div class="mt-6">
+        <h2 class="text-sm font-semibold text-slate-500 uppercase tracking-wide mb-3">Ultimi movimenti</h2>
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-100 divide-y divide-slate-50">
+            @foreach($ultimiMovimenti as $mov)
+                @php
+                    $isEntrata = $mov['tipo'] === 'entrata';
+                    $isSpesa   = $mov['tipo'] === 'spesa';
+                    $isF24     = $mov['tipo'] === 'f24';
+                    $isUscita  = $mov['tipo'] === 'uscita';
+
+                    $segno     = $isEntrata ? '+' : '−';
+                    $coloreImp = $isEntrata ? 'text-emerald-600' : 'text-red-500';
+
+                    $badgeClass = match($mov['tipo']) {
+                        'entrata' => 'bg-emerald-100 text-emerald-700',
+                        'uscita'  => 'bg-red-100 text-red-600',
+                        'f24'     => 'bg-purple-100 text-purple-700',
+                        default   => 'bg-slate-100 text-slate-600',
+                    };
+                    $badgeLabel = match($mov['tipo']) {
+                        'entrata' => 'Entrata',
+                        'uscita'  => 'Uscita',
+                        'f24'     => 'F24',
+                        default   => 'Spesa',
+                    };
+                @endphp
+                <div class="flex items-center gap-3 px-4 py-3">
+                    <div class="flex-1 min-w-0">
+                        <div class="flex items-center gap-2">
+                            <span class="text-xs font-medium px-2 py-0.5 rounded-full {{ $badgeClass }}">{{ $badgeLabel }}</span>
+                            <span class="text-sm font-medium text-slate-800 truncate">{{ $mov['descrizione'] }}</span>
+                        </div>
+                        @if($mov['note'])
+                            <p class="text-xs text-slate-400 mt-0.5 truncate">{{ $mov['note'] }}</p>
+                        @endif
+                    </div>
+                    <div class="text-right flex-shrink-0">
+                        <span class="text-sm font-bold {{ $coloreImp }}">{{ $segno }} {{ number_format($mov['importo'], 0, ',', '.') }} €</span>
+                        <p class="text-xs text-slate-400">{{ $mov['data']->translatedFormat('d M') }}</p>
+                    </div>
+                </div>
+            @endforeach
+        </div>
+    </div>
+    @endif
+
 </div>
 </x-app-layout>

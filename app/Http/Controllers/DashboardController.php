@@ -46,6 +46,38 @@ class DashboardController extends Controller
             ];
         });
 
-        return view('dashboard', compact('righe', 'anno', 'mese'));
+        $ultimeSpese = \App\Models\BudgetExpense::with('category')
+            ->where('user_id', auth()->id())
+            ->orderByDesc('data')
+            ->orderByDesc('id')
+            ->limit(15)
+            ->get()
+            ->map(fn($e) => [
+                'tipo'        => 'spesa',
+                'data'        => $e->data,
+                'descrizione' => $e->category?->nome ?? $e->category?->categoria ?? '—',
+                'importo'     => $e->importo,
+                'note'        => $e->note,
+            ]);
+
+        $ultimeTransazioni = \App\Models\Transaction::where('user_id', auth()->id())
+            ->orderByDesc('data')
+            ->orderByDesc('id')
+            ->limit(15)
+            ->get()
+            ->map(fn($t) => [
+                'tipo'        => $t->tipo,
+                'data'        => $t->data,
+                'descrizione' => $t->causale,
+                'importo'     => $t->importo,
+                'note'        => $t->note,
+            ]);
+
+        $ultimiMovimenti = $ultimeSpese->concat($ultimeTransazioni)
+            ->sortByDesc(fn($m) => $m['data']->timestamp)
+            ->take(10)
+            ->values();
+
+        return view('dashboard', compact('righe', 'anno', 'mese', 'ultimiMovimenti'));
     }
 }
