@@ -48,8 +48,7 @@ class DashboardController extends Controller
 
         $ultimeSpese = \App\Models\BudgetExpense::with('category')
             ->where('user_id', auth()->id())
-            ->orderByDesc('data')
-            ->orderByDesc('id')
+            ->orderByDesc('created_at')
             ->limit(15)
             ->get()
             ->map(fn($e) => [
@@ -58,11 +57,11 @@ class DashboardController extends Controller
                 'descrizione' => $e->category?->nome ?? $e->category?->categoria ?? '—',
                 'importo'     => $e->importo,
                 'note'        => $e->note,
+                'created_at'  => $e->created_at,
             ]);
 
         $ultimeTransazioni = \App\Models\Transaction::where('user_id', auth()->id())
-            ->orderByDesc('data')
-            ->orderByDesc('id')
+            ->orderByDesc('created_at')
             ->limit(15)
             ->get()
             ->map(fn($t) => [
@@ -71,10 +70,11 @@ class DashboardController extends Controller
                 'descrizione' => $t->causale,
                 'importo'     => $t->importo,
                 'note'        => $t->note,
+                'created_at'  => $t->created_at,
             ]);
 
         $ultimiMovimenti = $ultimeSpese->concat($ultimeTransazioni)
-            ->sortByDesc(fn($m) => $m['data']->timestamp)
+            ->sortByDesc(fn($m) => $m['created_at']->timestamp)
             ->take(10)
             ->values();
 
