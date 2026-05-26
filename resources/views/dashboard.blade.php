@@ -22,8 +22,13 @@
              active: 0,
              goTo(i) {
                  this.$refs.slider.scrollTo({ left: i * this.$refs.slider.offsetWidth, behavior: 'smooth' });
+             },
+             syncHeight() {
+                 const slide = this.$refs.slider.children[this.active];
+                 if (slide) this.$refs.slider.style.height = slide.offsetHeight + 'px';
              }
-         }">
+         }"
+         x-init="$nextTick(() => syncHeight())">
 
         {{-- Tab-bar di navigazione --}}
         <div class="flex gap-1 bg-slate-100 p-1 rounded-xl mb-4">
@@ -46,9 +51,9 @@
 
         {{-- Slider --}}
         <div x-ref="slider"
-             @scroll.debounce.80ms="active = Math.round($el.scrollLeft / $el.offsetWidth)"
-             class="flex overflow-x-auto snap-x snap-mandatory"
-             style="scrollbar-width: none; -ms-overflow-style: none;">
+             @scroll.debounce.80ms="active = Math.round($el.scrollLeft / $el.offsetWidth); syncHeight()"
+             class="flex overflow-x-auto snap-x snap-mandatory items-start overflow-y-hidden"
+             style="scrollbar-width: none; -ms-overflow-style: none; transition: height 0.3s ease;">
 
             {{-- Slide 1: Categorie --}}
             <div class="flex-shrink-0 w-full snap-start">
