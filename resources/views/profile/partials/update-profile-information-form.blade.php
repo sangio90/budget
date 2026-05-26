@@ -33,7 +33,7 @@
                     <p class="text-sm mt-2 text-gray-800">
                         {{ __('Your email address is unverified.') }}
 
-                        <button form="send-verification" class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        <button form="send-verification" class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
                             {{ __('Click here to re-send the verification email.') }}
                         </button>
                     </p>
@@ -45,6 +45,30 @@
                     @endif
                 </div>
             @endif
+        </div>
+
+        <div>
+            <x-input-label :value="__('Colore tema')" />
+            <div class="mt-2 flex flex-wrap gap-3">
+                @foreach([
+                    'indigo' => ['label' => 'Indigo',  'bg' => '#4f46e5'],
+                    'blue'   => ['label' => 'Blue',    'bg' => '#2563eb'],
+                    'violet' => ['label' => 'Violet',  'bg' => '#7c3aed'],
+                    'emerald'=> ['label' => 'Emerald', 'bg' => '#059669'],
+                    'teal'   => ['label' => 'Teal',    'bg' => '#0d9488'],
+                    'rose'   => ['label' => 'Rose',    'bg' => '#e11d48'],
+                ] as $value => $opts)
+                    <label class="flex flex-col items-center gap-1 cursor-pointer">
+                        <input type="radio" name="theme_color" value="{{ $value }}"
+                               {{ old('theme_color', $user->theme_color ?? 'indigo') === $value ? 'checked' : '' }}
+                               class="sr-only peer">
+                        <span class="w-8 h-8 rounded-full ring-2 ring-transparent peer-checked:ring-offset-2 peer-checked:ring-gray-600 transition"
+                              style="background-color: {{ $opts['bg'] }}"></span>
+                        <span class="text-xs text-gray-500">{{ $opts['label'] }}</span>
+                    </label>
+                @endforeach
+            </div>
+            <x-input-error class="mt-2" :messages="$errors->get('theme_color')" />
         </div>
 
         <div class="flex items-center gap-4">
@@ -61,4 +85,12 @@
             @endif
         </div>
     </form>
+
+    <script>
+        document.querySelectorAll('input[name="theme_color"]').forEach(function(radio) {
+            radio.addEventListener('change', function() {
+                document.documentElement.setAttribute('data-theme', this.value);
+            });
+        });
+    </script>
 </section>

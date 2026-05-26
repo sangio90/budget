@@ -33,7 +33,7 @@
                         @click.outside="catClose()"
                         placeholder="Cerca categoria..."
                         autocomplete="off"
-                        class="w-full border border-slate-200 rounded-xl px-4 py-3 pr-8 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white">
+                        class="w-full border border-slate-200 rounded-xl px-4 py-3 pr-8 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white">
                     <svg class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                     <ul x-show="catOpen && catFiltered.length"
                         x-transition:enter="transition ease-out duration-100"
@@ -42,7 +42,7 @@
                         class="absolute z-30 left-0 right-0 mt-1 bg-white border border-slate-200 rounded-xl shadow-lg overflow-auto text-sm max-h-52">
                         <template x-for="(cat, i) in catFiltered" :key="cat.value">
                             <li @mousedown.prevent="catSelect(cat)"
-                                :class="i === catHighlighted ? 'bg-indigo-50 text-indigo-700' : 'text-slate-700 hover:bg-slate-50'"
+                                :class="i === catHighlighted ? 'bg-primary-50 text-primary-700' : 'text-slate-700 hover:bg-slate-50'"
                                 class="px-4 py-2.5 cursor-pointer"
                                 x-text="cat.label"></li>
                         </template>
@@ -65,7 +65,7 @@
                         :placeholder="selectedCategoria ? 'Cerca voce di spesa...' : 'Prima seleziona una categoria'"
                         :disabled="!selectedCategoria"
                         autocomplete="off"
-                        class="w-full border border-slate-200 rounded-xl px-4 py-3 pr-8 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-slate-50">
+                        class="w-full border border-slate-200 rounded-xl px-4 py-3 pr-8 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-slate-50">
                     <svg class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                     <ul x-show="itemOpen && itemFiltered.length"
                         x-transition:enter="transition ease-out duration-100"
@@ -74,7 +74,7 @@
                         class="absolute z-20 left-0 right-0 mt-1 bg-white border border-slate-200 rounded-xl shadow-lg overflow-auto text-sm max-h-52">
                         <template x-for="(item, i) in itemFiltered" :key="item.id">
                             <li @mousedown.prevent="itemSelect(item)"
-                                :class="i === itemHighlighted ? 'bg-indigo-50 text-indigo-700' : 'text-slate-700 hover:bg-slate-50'"
+                                :class="i === itemHighlighted ? 'bg-primary-50 text-primary-700' : 'text-slate-700 hover:bg-slate-50'"
                                 class="px-4 py-2.5 cursor-pointer"
                                 x-text="item.nome"></li>
                         </template>
@@ -88,13 +88,13 @@
                     <label class="block text-xs font-medium text-slate-600 mb-1.5">Importo (€)</label>
                     <input type="number" name="importo" step="0.01" min="0.01" required placeholder="0,00"
                         value="{{ old('importo') }}"
-                        class="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        class="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500">
                     @error('importo')<p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
                 </div>
                 <div>
                     <label class="block text-xs font-medium text-slate-600 mb-1.5">Data</label>
                     <input type="date" name="data" required value="{{ old('data', now()->format('Y-m-d')) }}"
-                        class="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        class="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500">
                     @error('data')<p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
                 </div>
             </div>
@@ -112,12 +112,12 @@
                     @focus="noteOnInput()"
                     @click.outside="noteClose()"
                     autocomplete="off"
-                    class="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    class="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500">
                 <ul x-show="noteOpen && noteSuggestions.length"
                     class="absolute z-20 left-0 right-0 mt-1 bg-white border border-slate-200 rounded-xl shadow-lg overflow-hidden text-sm">
                     <template x-for="(s, i) in noteSuggestions" :key="s">
                         <li @mousedown.prevent="noteSelect(s)"
-                            :class="i === noteHighlighted ? 'bg-indigo-50 text-indigo-700' : 'text-slate-700 hover:bg-slate-50'"
+                            :class="i === noteHighlighted ? 'bg-primary-50 text-primary-700' : 'text-slate-700 hover:bg-slate-50'"
                             class="px-4 py-2.5 cursor-pointer"
                             x-text="s"></li>
                     </template>
@@ -125,14 +125,14 @@
             </div>
 
             <button type="submit"
-                class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 rounded-xl transition text-sm">
+                class="w-full bg-primary-600 hover:bg-primary-700 text-white font-semibold py-3 rounded-xl transition text-sm">
                 Registra Spesa
             </button>
         </form>
     </div>
 
     <a href="{{ route('budget.spese') }}"
-        class="flex items-center justify-center gap-2 text-sm text-indigo-600 font-medium py-2 hover:underline">
+        class="flex items-center justify-center gap-2 text-sm text-primary-600 font-medium py-2 hover:underline">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/></svg>
         Vedi tutte le spese →
     </a>

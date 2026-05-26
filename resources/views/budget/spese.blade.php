@@ -7,7 +7,7 @@
             <p class="text-sm text-slate-500 mt-0.5">{{ $spese->count() }} voci · totale {{ number_format($totale, 2, ',', '.') }} €</p>
         </div>
         <a href="{{ route('budget.index') }}"
-            class="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold px-4 py-2.5 rounded-xl transition">
+            class="flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white text-sm font-semibold px-4 py-2.5 rounded-xl transition">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
             Nuova spesa
         </a>
@@ -17,7 +17,7 @@
     <form method="GET" action="{{ route('budget.spese') }}" class="bg-white rounded-2xl shadow-sm border border-slate-100 px-5 py-4 flex flex-wrap gap-3 items-end">
         <div>
             <label class="block text-xs font-medium text-slate-500 mb-1">Anno</label>
-            <select name="anno" onchange="this.form.submit()" class="border border-slate-200 rounded-lg px-3 py-2 pr-8 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            <select name="anno" onchange="this.form.submit()" class="border border-slate-200 rounded-lg px-3 py-2 pr-8 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primary-500">
                 @foreach([2024, 2025, 2026] as $a)
                     <option value="{{ $a }}" {{ $anno == $a ? 'selected' : '' }}>{{ $a }}</option>
                 @endforeach
@@ -25,7 +25,7 @@
         </div>
         <div>
             <label class="block text-xs font-medium text-slate-500 mb-1">Mese</label>
-            <select name="mese" onchange="this.form.submit()" class="border border-slate-200 rounded-lg px-3 py-2 pr-8 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 min-w-[9rem]">
+            <select name="mese" onchange="this.form.submit()" class="border border-slate-200 rounded-lg px-3 py-2 pr-8 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primary-500 min-w-[9rem]">
                 <option value="">Tutti</option>
                 @foreach(range(1,12) as $m)
                     @php $nomiMesi = ['','Gennaio','Febbraio','Marzo','Aprile','Maggio','Giugno','Luglio','Agosto','Settembre','Ottobre','Novembre','Dicembre']; @endphp
@@ -35,7 +35,7 @@
         </div>
         <div>
             <label class="block text-xs font-medium text-slate-500 mb-1">Categoria</label>
-            <select name="categoria" onchange="this.form.submit()" class="border border-slate-200 rounded-lg px-3 py-2 pr-8 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 min-w-[9rem]">
+            <select name="categoria" onchange="this.form.submit()" class="border border-slate-200 rounded-lg px-3 py-2 pr-8 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primary-500 min-w-[9rem]">
                 <option value="">Tutte</option>
                 @foreach($categorie as $cat)
                     <option value="{{ $cat }}" {{ $categoriaFiltro == $cat ? 'selected' : '' }}>{{ $cat }}</option>
@@ -77,7 +77,7 @@
                             <td class="px-5 py-3 text-right">
                                 <div class="flex items-center justify-end gap-2">
                                     <a href="{{ route('budget.edit', $s) }}"
-                                        class="text-slate-400 hover:text-indigo-600 transition" title="Modifica">
+                                        class="text-slate-400 hover:text-primary-600 transition" title="Modifica">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
                                     </a>
                                     <form method="POST" action="{{ route('budget.destroy', $s) }}">
@@ -115,7 +115,7 @@
                         </div>
                         <div class="flex items-center gap-1 flex-shrink-0">
                             <span class="font-semibold text-sm text-red-500 mr-1">{{ number_format($s->importo, 2, ',', '.') }} €</span>
-                            <a href="{{ route('budget.edit', $s) }}" class="text-slate-400 hover:text-indigo-500 transition p-2 -m-1 rounded-xl">
+                            <a href="{{ route('budget.edit', $s) }}" class="text-slate-400 hover:text-primary-500 transition p-2 -m-1 rounded-xl">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
                             </a>
                             <form method="POST" action="{{ route('budget.destroy', $s) }}">
@@ -138,7 +138,7 @@
             <div class="px-5 py-12 text-center text-slate-400">
                 <svg class="w-12 h-12 mx-auto mb-3 text-slate-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
                 <p class="text-sm">Nessuna spesa trovata con questi filtri</p>
-                <a href="{{ route('budget.index') }}" class="mt-3 inline-block text-indigo-600 text-sm font-medium hover:underline">Inserisci la prima spesa →</a>
+                <a href="{{ route('budget.index') }}" class="mt-3 inline-block text-primary-600 text-sm font-medium hover:underline">Inserisci la prima spesa →</a>
             </div>
         @endif
     </div>

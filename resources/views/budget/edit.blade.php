@@ -19,7 +19,7 @@
             <div>
                 <label class="block text-xs font-medium text-slate-600 mb-1.5">Categoria</label>
                 <select x-model="selectedCategoria" @change="filterSubcategories()"
-                    class="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white">
+                    class="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white">
                     <option value="">-- Seleziona categoria --</option>
                     @foreach($categories->pluck('categoria')->unique() as $cat)
                         <option value="{{ $cat }}" {{ $expense->category->categoria === $cat ? 'selected' : '' }}>{{ $cat }}</option>
@@ -30,7 +30,7 @@
             <div>
                 <label class="block text-xs font-medium text-slate-600 mb-1.5">Voce di spesa</label>
                 <select name="budget_category_id" required x-model="selectedItem"
-                    class="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white">
+                    class="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white">
                     <option value="">-- Seleziona voce --</option>
                     <template x-for="item in filteredItems" :key="item.id">
                         <option :value="item.id" :selected="item.id === currentItemId" x-text="item.nome"></option>
@@ -44,13 +44,13 @@
                     <label class="block text-xs font-medium text-slate-600 mb-1.5">Importo (€)</label>
                     <input type="number" name="importo" step="0.01" min="0.01" required
                         value="{{ old('importo', $expense->importo) }}"
-                        class="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        class="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500">
                     @error('importo')<p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
                 </div>
                 <div>
                     <label class="block text-xs font-medium text-slate-600 mb-1.5">Data</label>
                     <input type="date" name="data" required value="{{ old('data', $expense->data->format('Y-m-d')) }}"
-                        class="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        class="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500">
                     @error('data')<p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
                 </div>
             </div>
@@ -58,7 +58,7 @@
             <div>
                 <label class="block text-xs font-medium text-slate-600 mb-1.5">Note (opzionale)</label>
                 <input type="text" name="note" value="{{ old('note', $expense->note) }}"
-                    class="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    class="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500">
             </div>
 
             <div class="flex gap-3 pt-1">
@@ -67,7 +67,7 @@
                     Annulla
                 </a>
                 <button type="submit"
-                    class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 rounded-xl transition text-sm">
+                    class="flex-1 bg-primary-600 hover:bg-primary-700 text-white font-semibold py-3 rounded-xl transition text-sm">
                     Salva modifiche
                 </button>
             </div>

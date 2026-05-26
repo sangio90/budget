@@ -9,7 +9,7 @@
         <form method="GET" action="{{ route('transactions.index') }}">
             @if($mese) <input type="hidden" name="mese" value="{{ $mese }}"> @endif
             @if($tipo)  <input type="hidden" name="tipo"  value="{{ $tipo }}">  @endif
-            <select name="anno" onchange="this.form.submit()" class="text-sm font-semibold border border-slate-200 rounded-xl pl-4 pr-9 py-2.5 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            <select name="anno" onchange="this.form.submit()" class="text-sm font-semibold border border-slate-200 rounded-xl pl-4 pr-9 py-2.5 bg-white focus:outline-none focus:ring-2 focus:ring-primary-500">
                 @foreach([2024, 2025, 2026] as $a)
                     <option value="{{ $a }}" {{ $anno == $a ? 'selected' : '' }}>{{ $a }}</option>
                 @endforeach
@@ -63,9 +63,9 @@
                     <div class="text-xs text-slate-400 mb-0.5">− F24 pagati</div>
                     <div class="font-semibold whitespace-nowrap text-amber-600">{{ number_format($f24Anno, 2, ',', '.') }} €</div>
                 </div>
-                <div class="bg-indigo-50 rounded-xl p-3">
-                    <div class="text-xs text-indigo-400 mb-0.5">Gran totale</div>
-                    <div class="font-bold whitespace-nowrap text-indigo-700">{{ number_format($fiscale['granTotale'], 2, ',', '.') }} €</div>
+                <div class="bg-primary-50 rounded-xl p-3">
+                    <div class="text-xs text-primary-400 mb-0.5">Gran totale</div>
+                    <div class="font-bold whitespace-nowrap text-primary-700">{{ number_format($fiscale['granTotale'], 2, ',', '.') }} €</div>
                 </div>
             </div>
 
@@ -181,13 +181,13 @@
                     <label class="block text-xs font-medium text-slate-600 mb-1.5">Importo (€)</label>
                     <input type="number" name="importo" step="0.01" min="0.01" required placeholder="0,00"
                         value="{{ old('importo') }}"
-                        class="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        class="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500">
                     @error('importo')<p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
                 </div>
                 <div>
                     <label class="block text-xs font-medium text-slate-600 mb-1.5">Data</label>
                     <input type="date" name="data" required value="{{ old('data', now()->format('Y-m-d')) }}"
-                        class="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        class="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500">
                     @error('data')<p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
                 </div>
             </div>
@@ -205,7 +205,7 @@
                     @keydown.enter.prevent="confirmSuggest()"
                     @keydown.escape="showSuggest = false"
                     autocomplete="off"
-                    class="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    class="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500">
                 @error('causale')<p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
 
                 {{-- Dropdown suggerimenti --}}
@@ -215,7 +215,7 @@
                     <template x-for="(s, idx) in filteredCausali" :key="s">
                         <button type="button"
                             @click="selectCausale(s)"
-                            :class="idx === activeIdx ? 'bg-indigo-50 text-indigo-700' : 'text-slate-700 hover:bg-slate-50'"
+                            :class="idx === activeIdx ? 'bg-primary-50 text-primary-700' : 'text-slate-700 hover:bg-slate-50'"
                             class="w-full text-left px-4 py-2.5 text-sm border-b border-slate-50 last:border-0 transition">
                             <span x-text="s"></span>
                         </button>
@@ -227,11 +227,11 @@
             <div>
                 <label class="block text-xs font-medium text-slate-600 mb-1.5">Note (opzionale)</label>
                 <input type="text" name="note" placeholder="Note aggiuntive..." value="{{ old('note') }}"
-                    class="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    class="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500">
             </div>
 
             <button type="submit"
-                class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 rounded-xl transition text-sm">
+                class="w-full bg-primary-600 hover:bg-primary-700 text-white font-semibold py-3 rounded-xl transition text-sm">
                 Registra Movimento
             </button>
         </form>
@@ -241,14 +241,14 @@
     <div class="flex gap-2 flex-wrap">
         <form method="GET" action="{{ route('transactions.index') }}" class="flex gap-2 flex-wrap w-full sm:w-auto">
             <input type="hidden" name="anno" value="{{ $anno }}">
-            <select name="mese" onchange="this.form.submit()" class="text-sm border border-slate-200 rounded-lg pl-3 pr-8 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 min-w-[10rem]">
+            <select name="mese" onchange="this.form.submit()" class="text-sm border border-slate-200 rounded-lg pl-3 pr-8 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-primary-500 min-w-[10rem]">
                 <option value="">Tutti i mesi</option>
                 @foreach(range(1,12) as $m)
                     @php $nomiMesi = ['','Gennaio','Febbraio','Marzo','Aprile','Maggio','Giugno','Luglio','Agosto','Settembre','Ottobre','Novembre','Dicembre']; @endphp
                     <option value="{{ $m }}" {{ $mese == $m ? 'selected' : '' }}>{{ $nomiMesi[$m] }}</option>
                 @endforeach
             </select>
-            <select name="tipo" onchange="this.form.submit()" class="text-sm border border-slate-200 rounded-lg pl-3 pr-8 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 min-w-[8rem]">
+            <select name="tipo" onchange="this.form.submit()" class="text-sm border border-slate-200 rounded-lg pl-3 pr-8 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-primary-500 min-w-[8rem]">
                 <option value="">Tutti i tipi</option>
                 <option value="entrata" {{ $tipo == 'entrata' ? 'selected' : '' }}>Entrate</option>
                 <option value="uscita" {{ $tipo == 'uscita' ? 'selected' : '' }}>Uscite</option>

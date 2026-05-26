@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="it">
+<html lang="it" data-theme="{{ auth()->user()->theme_color ?? 'indigo' }}">
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -29,29 +29,30 @@
                     <span class="font-bold text-lg tracking-tight">FamBudget</span>
                 </a>
                 <nav class="flex-1 px-4 py-6 space-y-1">
-                    <a href="{{ route('dashboard') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium {{ request()->routeIs('dashboard') ? 'bg-indigo-600 text-white' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }} transition">
+                    <a href="{{ route('dashboard') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium {{ request()->routeIs('dashboard') ? 'bg-primary-600 text-white' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }} transition">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
                         Dashboard
                     </a>
-                    <a href="{{ route('budget.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium {{ request()->routeIs('budget.index') ? 'bg-indigo-600 text-white' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }} transition">
+                    <a href="{{ route('budget.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium {{ request()->routeIs('budget.index') ? 'bg-primary-600 text-white' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }} transition">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
                         Nuova Spesa
                     </a>
-                    <a href="{{ route('budget.spese') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium {{ request()->routeIs('budget.spese') || request()->routeIs('budget.edit') ? 'bg-indigo-600 text-white' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }} transition">
+                    <a href="{{ route('budget.spese') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium {{ request()->routeIs('budget.spese') || request()->routeIs('budget.edit') ? 'bg-primary-600 text-white' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }} transition">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
                         Lista Spese
                     </a>
-                    <a href="{{ route('budget.importi') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium {{ request()->routeIs('budget.importi*') ? 'bg-indigo-600 text-white' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }} transition">
+                    <a href="{{ route('budget.importi') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium {{ request()->routeIs('budget.importi*') ? 'bg-primary-600 text-white' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }} transition">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/></svg>
                         Imposta Budget
                     </a>
-                    <a href="{{ route('transactions.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium {{ request()->routeIs('transactions.*') ? 'bg-indigo-600 text-white' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }} transition">
+                    <a href="{{ route('transactions.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium {{ request()->routeIs('transactions.*') ? 'bg-primary-600 text-white' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }} transition">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>
                         Entrate/Uscite
                     </a>
                 </nav>
                 <div class="px-4 py-4 border-t border-slate-700">
-                    <div class="text-xs text-slate-400 mb-2">{{ auth()->user()->name }}</div>
+                    <div class="text-xs text-slate-400 mb-1">{{ auth()->user()->name }}</div>
+                    <a href="{{ route('profile.edit') }}" class="text-xs text-slate-400 hover:text-white transition block mb-2">Profilo &amp; Tema</a>
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
                         <button type="submit" class="text-xs text-slate-400 hover:text-white transition">Esci →</button>
@@ -87,21 +88,25 @@
 
         {{-- Mobile bottom navigation --}}
         <nav class="lg:hidden fixed bottom-0 inset-x-0 bg-slate-900 border-t border-slate-700 flex z-50">
-            <a href="{{ route('dashboard') }}" class="flex-1 flex flex-col items-center py-3 text-xs {{ request()->routeIs('dashboard') ? 'text-indigo-400' : 'text-slate-400' }}">
+            <a href="{{ route('dashboard') }}" class="flex-1 flex flex-col items-center py-3 text-xs {{ request()->routeIs('dashboard') ? 'text-primary-400' : 'text-slate-400' }}">
                 <svg class="w-6 h-6 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
                 Home
             </a>
-            <a href="{{ route('budget.index') }}" class="flex-1 flex flex-col items-center py-3 text-xs {{ request()->routeIs('budget.index') ? 'text-indigo-400' : 'text-slate-400' }}">
+            <a href="{{ route('budget.index') }}" class="flex-1 flex flex-col items-center py-3 text-xs {{ request()->routeIs('budget.index') ? 'text-primary-400' : 'text-slate-400' }}">
                 <svg class="w-6 h-6 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
                 + Spesa
             </a>
-            <a href="{{ route('budget.spese') }}" class="flex-1 flex flex-col items-center py-3 text-xs {{ request()->routeIs('budget.spese') || request()->routeIs('budget.edit') ? 'text-indigo-400' : 'text-slate-400' }}">
+            <a href="{{ route('budget.spese') }}" class="flex-1 flex flex-col items-center py-3 text-xs {{ request()->routeIs('budget.spese') || request()->routeIs('budget.edit') ? 'text-primary-400' : 'text-slate-400' }}">
                 <svg class="w-6 h-6 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/></svg>
                 Lista
             </a>
-            <a href="{{ route('transactions.index') }}" class="flex-1 flex flex-col items-center py-3 text-xs {{ request()->routeIs('transactions.*') ? 'text-indigo-400' : 'text-slate-400' }}">
+            <a href="{{ route('transactions.index') }}" class="flex-1 flex flex-col items-center py-3 text-xs {{ request()->routeIs('transactions.*') ? 'text-primary-400' : 'text-slate-400' }}">
                 <svg class="w-6 h-6 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>
                 Mov.
+            </a>
+            <a href="{{ route('profile.edit') }}" class="flex-1 flex flex-col items-center py-3 text-xs {{ request()->routeIs('profile.*') ? 'text-primary-400' : 'text-slate-400' }}">
+                <svg class="w-6 h-6 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                Profilo
             </a>
         </nav>
         <script>

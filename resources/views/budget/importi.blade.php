@@ -11,7 +11,7 @@
             @foreach($anni as $a)
                 <a href="{{ route('budget.importi', ['anno' => $a]) }}"
                     class="px-4 py-2 rounded-lg text-sm font-semibold transition
-                        {{ $anno == $a ? 'bg-indigo-600 text-white' : 'bg-white border border-slate-200 text-slate-600 hover:border-indigo-300 hover:text-indigo-600' }}">
+                        {{ $anno == $a ? 'bg-primary-600 text-white' : 'bg-white border border-slate-200 text-slate-600 hover:border-primary-300 hover:text-primary-600' }}">
                     {{ $a }}
                 </a>
             @endforeach
@@ -60,7 +60,7 @@
                                     <div class="flex items-center gap-2 flex-wrap">
                                         <span class="text-sm text-slate-700 font-medium">{{ $item['nome'] }}</span>
                                         @if($item['is_override'])
-                                            <span class="text-xs bg-indigo-100 text-indigo-600 px-1.5 py-0.5 rounded-full font-medium">
+                                            <span class="text-xs bg-primary-100 text-primary-600 px-1.5 py-0.5 rounded-full font-medium">
                                                 personalizzato {{ $anno }}
                                             </span>
                                         @endif
@@ -79,8 +79,8 @@
                                             min="0"
                                             x-model="annuale"
                                             @input="mensile = Math.round(annuale / 12 * 100) / 100; recalcTotals()"
-                                            class="w-full sm:w-36 border border-slate-200 rounded-lg px-3 py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500 text-right"
-                                            :class="{ 'border-indigo-300 bg-indigo-50': annuale != {{ $item['default_annuale'] }} }">
+                                            class="w-full sm:w-36 border border-slate-200 rounded-lg px-3 py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary-500 text-right"
+                                            :class="{ 'border-primary-300 bg-primary-50': annuale != {{ $item['default_annuale'] }} }">
                                     </div>
                                     <div class="flex-1 sm:flex-none">
                                         <label class="block text-xs text-slate-400 mb-1">Mensile</label>
@@ -120,7 +120,7 @@
                     </div>
                 </div>
                 <button type="submit"
-                    class="bg-indigo-600 hover:bg-indigo-500 text-white font-semibold px-6 py-2.5 rounded-xl transition text-sm">
+                    class="bg-primary-600 hover:bg-primary-500 text-white font-semibold px-6 py-2.5 rounded-xl transition text-sm">
                     Salva tutto
                 </button>
             </div>
