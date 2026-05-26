@@ -49,12 +49,13 @@ class DashboardController extends Controller
         $ultimeSpese = \App\Models\BudgetExpense::with('category')
             ->where('user_id', auth()->id())
             ->orderByDesc('created_at')
-            ->limit(15)
+            ->limit(10)
             ->get()
             ->map(fn($e) => [
                 'tipo'        => 'spesa',
                 'data'        => $e->data,
-                'descrizione' => $e->category?->nome ?? $e->category?->categoria ?? '—',
+                'descrizione' => $e->category?->nome ?? '—',
+                'categoria'   => $e->category?->categoria ?? '—',
                 'importo'     => $e->importo,
                 'note'        => $e->note,
                 'created_at'  => $e->created_at,
@@ -78,6 +79,6 @@ class DashboardController extends Controller
             ->take(10)
             ->values();
 
-        return view('dashboard', compact('righe', 'anno', 'mese', 'ultimiMovimenti'));
+        return view('dashboard', compact('righe', 'anno', 'mese', 'ultimeSpese', 'ultimiMovimenti'));
     }
 }
