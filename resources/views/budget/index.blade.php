@@ -52,33 +52,16 @@
 
             <div>
                 <label class="block text-xs font-medium text-slate-600 mb-1.5">Voce di spesa</label>
-                <input type="hidden" name="budget_category_id" :value="selectedItem">
                 <div class="relative">
-                    <input type="text" x-model="itemQuery"
-                        @input="itemOnInput()"
-                        @focus="itemOnFocus()"
-                        @keydown.arrow-down.prevent="itemMoveDown()"
-                        @keydown.arrow-up.prevent="itemMoveUp()"
-                        @keydown.enter.prevent="itemConfirm()"
-                        @keydown.escape="itemClose()"
-                        @click.outside="itemClose()"
-                        :placeholder="selectedCategoria ? 'Cerca voce di spesa...' : 'Prima seleziona una categoria'"
+                    <select name="budget_category_id" x-model="selectedItem" @change="noteOnInput()"
                         :disabled="!selectedCategoria"
-                        autocomplete="off"
-                        class="w-full border border-slate-200 rounded-xl px-4 py-3 pr-8 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-slate-50">
-                    <svg class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
-                    <ul x-show="itemOpen && itemFiltered.length"
-                        x-transition:enter="transition ease-out duration-100"
-                        x-transition:enter-start="opacity-0 scale-95"
-                        x-transition:enter-end="opacity-100 scale-100"
-                        class="absolute z-20 left-0 right-0 mt-1 bg-white border border-slate-200 rounded-xl shadow-lg overflow-auto text-sm max-h-52">
-                        <template x-for="(item, i) in itemFiltered" :key="item.id">
-                            <li @mousedown.prevent="itemSelect(item)"
-                                :class="i === itemHighlighted ? 'bg-primary-50 text-primary-700' : 'text-slate-700 hover:bg-slate-50'"
-                                class="px-4 py-2.5 cursor-pointer"
-                                x-text="item.nome"></li>
+                        class="w-full border border-slate-200 rounded-xl px-4 py-3 pr-8 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-slate-50 appearance-none">
+                        <option value="" x-text="selectedCategoria ? 'Seleziona voce di spesa...' : 'Prima seleziona una categoria'"></option>
+                        <template x-for="item in filteredItems" :key="item.id">
+                            <option :value="item.id" x-text="item.nome"></option>
                         </template>
-                    </ul>
+                    </select>
+                    <svg class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                 </div>
                 @error('budget_category_id')<p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
             </div>
@@ -184,10 +167,8 @@ function budgetApp() {
             this.catClose();
             this.filterSubcategories();
             this.selectedItem = '';
-            this.itemQuery = '';
-            if (this.filteredItems.length > 0) {
-                this.itemSelect(this.filteredItems[0]);
-            }
+            this.noteInput = '';
+            this.noteSuggestions = [];
         },
 
         catConfirm() {
@@ -204,48 +185,6 @@ function budgetApp() {
         },
 
         catMoveUp() { this.catHighlighted = Math.max(this.catHighlighted - 1, -1); },
-
-        // Item combobox
-        itemQuery: '',
-        itemOpen: false,
-        itemHighlighted: -1,
-
-        get itemFiltered() {
-            const q = this.itemQuery.trim().toLowerCase();
-            if (!q) return this.filteredItems;
-            return this.filteredItems.filter(i => i.nome.toLowerCase().includes(q));
-        },
-
-        itemOnInput() {
-            this.itemOpen = true;
-            this.itemHighlighted = -1;
-            this.selectedItem = '';
-        },
-
-        itemOnFocus() { this.itemOpen = this.filteredItems.length > 0; },
-        itemClose() { this.itemOpen = false; this.itemHighlighted = -1; },
-
-        itemSelect(item) {
-            this.itemQuery = item.nome;
-            this.selectedItem = item.id;
-            this.itemClose();
-            this.noteOnInput();
-        },
-
-        itemConfirm() {
-            if (this.itemHighlighted >= 0 && this.itemFiltered[this.itemHighlighted]) {
-                this.itemSelect(this.itemFiltered[this.itemHighlighted]);
-            } else if (this.itemFiltered.length === 1) {
-                this.itemSelect(this.itemFiltered[0]);
-            }
-        },
-
-        itemMoveDown() {
-            if (!this.itemOpen) { this.itemOpen = this.filteredItems.length > 0; return; }
-            this.itemHighlighted = Math.min(this.itemHighlighted + 1, this.itemFiltered.length - 1);
-        },
-
-        itemMoveUp() { this.itemHighlighted = Math.max(this.itemHighlighted - 1, -1); },
 
         filterSubcategories() {
             this.filteredItems = this.allItems
@@ -299,8 +238,7 @@ function budgetApp() {
                     const catObj = this.categorieList.find(c => c.value === item.categoria);
                     this.catQuery = catObj ? catObj.label : item.categoria;
                     this.filterSubcategories();
-                    this.selectedItem = item.id;
-                    this.itemQuery = item.nome;
+                    this.$nextTick(() => { this.selectedItem = item.id; });
                 }
             }
         },

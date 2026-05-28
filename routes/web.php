@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\BudgetController;
 use App\Http\Controllers\BudgetAmountController;
+use App\Http\Controllers\BudgetCategoryController;
 use App\Http\Controllers\TransactionController;
 use Illuminate\Support\Facades\Route;
 
@@ -15,6 +16,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/budget/importi', [BudgetAmountController::class, 'index'])->name('budget.importi');
     Route::post('/budget/importi', [BudgetAmountController::class, 'save'])->name('budget.importi.save');
     Route::delete('/budget/importi/{category}', [BudgetAmountController::class, 'reset'])->name('budget.importi.reset');
+
+    Route::post('/budget/categorie/voce', [BudgetCategoryController::class, 'storeVoce'])->name('budget.categorie.voce.store');
+    Route::put('/budget/categorie/voce/{category}', [BudgetCategoryController::class, 'updateVoce'])->name('budget.categorie.voce.update');
+    Route::delete('/budget/categorie/voce/{category}', [BudgetCategoryController::class, 'destroyVoce'])->name('budget.categorie.voce.destroy');
+    Route::post('/budget/categorie/rename', [BudgetCategoryController::class, 'renameCategoria'])->name('budget.categorie.rename');
+    Route::post('/budget/categorie/destroy', [BudgetCategoryController::class, 'destroyCategoria'])->name('budget.categorie.destroy');
 
     Route::get('/budget', [BudgetController::class, 'index'])->name('budget.index');
     Route::post('/budget', [BudgetController::class, 'store'])->name('budget.store');
