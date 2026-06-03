@@ -119,8 +119,10 @@ class BudgetController extends Controller
                 'dati'         => $datiAnni,
                 'totaleBudget' => $totaleBudget,
                 'totaleSpeso'  => $totaleSpeso,
-                'alData'       => $fineMesePrecedente->translatedFormat('d F Y'),
-                'annoFiltro'   => (int) $anno,
+                'alData'        => $fineMesePrecedente->translatedFormat('d F Y'),
+                'annoFiltro'    => (int) $anno,
+                'annoCorrente'  => now()->year,
+                'meseCorrente'  => now()->month,
             ];
         }
 

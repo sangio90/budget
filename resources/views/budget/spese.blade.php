@@ -51,10 +51,11 @@
     @if($categoriaFiltro && $grafico)
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <script>
+    var _graficoData = @json($grafico);
     function graficoCategoria(grafico) {
+        let _chart = null; // fuori dal proxy reattivo di Alpine
         return {
             annoAttivo: grafico.anni.includes(grafico.annoFiltro) ? grafico.annoFiltro : grafico.anni[grafico.anni.length - 1],
-            chart: null,
             labels: ['Gen','Feb','Mar','Apr','Mag','Giu','Lug','Ago','Set','Ott','Nov','Dic'],
 
             init() {
@@ -64,37 +65,42 @@
 
             setAnno(a) { this.annoAttivo = a; },
 
-            getDatasets() {
-                const d      = grafico.dati[this.annoAttivo] || [];
+            getChartData() {
+                const max    = this.annoAttivo === grafico.annoCorrente ? grafico.meseCorrente : 12;
+                const d      = (grafico.dati[this.annoAttivo] || []).slice(0, max);
                 const budget = d.map(m => m.budget);
                 const speso  = d.map(m => m.speso);
-                return [
-                    {
-                        label: 'Budget',
-                        data: budget,
-                        backgroundColor: 'rgba(99,102,241,0.30)',
-                        borderColor: 'rgba(99,102,241,0.75)',
-                        borderWidth: 1,
-                        borderRadius: 4,
-                        order: 2,
-                    },
-                    {
-                        label: 'Speso',
-                        data: speso,
-                        backgroundColor: speso.map((v, i) => v > budget[i] ? 'rgba(239,68,68,0.55)' : 'rgba(16,185,129,0.50)'),
-                        borderColor:     speso.map((v, i) => v > budget[i] ? 'rgba(239,68,68,0.85)' : 'rgba(16,185,129,0.85)'),
-                        borderWidth: 1,
-                        borderRadius: 4,
-                        order: 1,
-                    }
-                ];
+                return {
+                    labels: this.labels.slice(0, max),
+                    datasets: [
+                        {
+                            label: 'Budget',
+                            data: budget,
+                            backgroundColor: 'rgba(99,102,241,0.30)',
+                            borderColor: 'rgba(99,102,241,0.75)',
+                            borderWidth: 1,
+                            borderRadius: 4,
+                            order: 2,
+                        },
+                        {
+                            label: 'Speso',
+                            data: speso,
+                            backgroundColor: speso.map((v, i) => v > budget[i] ? 'rgba(239,68,68,0.55)' : 'rgba(16,185,129,0.50)'),
+                            borderColor:     speso.map((v, i) => v > budget[i] ? 'rgba(239,68,68,0.85)' : 'rgba(16,185,129,0.85)'),
+                            borderWidth: 1,
+                            borderRadius: 4,
+                            order: 1,
+                        }
+                    ]
+                };
             },
 
             buildChart() {
                 if (!window.Chart) return;
-                this.chart = new Chart(this.$refs.canvas.getContext('2d'), {
+                const data = this.getChartData();
+                _chart = new Chart(this.$refs.canvas.getContext('2d'), {
                     type: 'bar',
-                    data: { labels: this.labels, datasets: this.getDatasets() },
+                    data,
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
@@ -115,15 +121,17 @@
             },
 
             updateChart() {
-                if (!this.chart) return;
-                this.chart.data.datasets = this.getDatasets();
-                this.chart.update();
+                if (!_chart) return;
+                const data = this.getChartData();
+                _chart.data.labels   = data.labels;
+                _chart.data.datasets = data.datasets;
+                _chart.update();
             }
         };
     }
     </script>
     <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-5"
-         x-data="graficoCategoria(@json($grafico))">
+         x-data="graficoCategoria(_graficoData)">
 
         {{-- Header + totali --}}
         <div class="flex flex-wrap items-start justify-between gap-4 mb-4">
