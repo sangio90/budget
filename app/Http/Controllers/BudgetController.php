@@ -45,7 +45,7 @@ class BudgetController extends Controller
         $mese = $request->input('mese', now()->month);
         $categoriaFiltro = $request->input('categoria', '');
 
-        $categories = BudgetCategory::orderBy('sort_order')->orderBy('categoria')->get();
+        $categories = BudgetCategory::with('amounts')->orderBy('sort_order')->orderBy('categoria')->get();
         $categorie = $categories->pluck('categoria')->unique()->values();
 
         $query = BudgetExpense::with('category')
@@ -64,7 +64,61 @@ class BudgetController extends Controller
 
         $totale = $spese->sum('importo');
 
-        return view('budget.spese', compact('spese', 'totale', 'categories', 'categorie', 'anno', 'mese', 'categoriaFiltro'));
+        $grafico = null;
+        if ($categoriaFiltro) {
+            $catsGruppo = $categories->where('categoria', $categoriaFiltro)->values();
+            $catIds     = $catsGruppo->pluck('id');
+
+            $anni = BudgetExpense::where('user_id', auth()->id())
+                ->whereIn('budget_category_id', $catIds)
+                ->selectRaw('YEAR(data) as anno')
+                ->distinct()
+                ->pluck('anno')
+                ->push(now()->year)
+                ->unique()->sort()->values()->toArray();
+
+            $datiAnni = [];
+            foreach ($anni as $a) {
+                $budgetMensile = $catsGruppo->sum(fn($c) => $c->importiPerAnno((int) $a)['mensile']);
+                $spesePerMese  = BudgetExpense::where('user_id', auth()->id())
+                    ->whereIn('budget_category_id', $catIds)
+                    ->whereYear('data', $a)
+                    ->selectRaw('MONTH(data) as mese, SUM(importo) as totale')
+                    ->groupBy('mese')
+                    ->pluck('totale', 'mese');
+
+                $mesiDati = [];
+                for ($m = 1; $m <= 12; $m++) {
+                    $mesiDati[] = [
+                        'budget' => round($budgetMensile, 2),
+                        'speso'  => round((float) ($spesePerMese[$m] ?? 0), 2),
+                    ];
+                }
+                $datiAnni[(int) $a] = $mesiDati;
+            }
+
+            $fineMesePrecedente = now()->startOfMonth()->subDay();
+            $annoTot            = $fineMesePrecedente->year;
+            $meseTot            = $fineMesePrecedente->month;
+            $budgetMensileTot   = $catsGruppo->sum(fn($c) => $c->importiPerAnno($annoTot)['mensile']);
+            $totaleBudget       = round($budgetMensileTot * $meseTot, 2);
+            $totaleSpeso        = round((float) BudgetExpense::where('user_id', auth()->id())
+                ->whereIn('budget_category_id', $catIds)
+                ->whereYear('data', $annoTot)
+                ->whereRaw('MONTH(data) <= ?', [$meseTot])
+                ->sum('importo'), 2);
+
+            $grafico = [
+                'anni'         => $anni,
+                'dati'         => $datiAnni,
+                'totaleBudget' => $totaleBudget,
+                'totaleSpeso'  => $totaleSpeso,
+                'alData'       => $fineMesePrecedente->translatedFormat('d F Y'),
+                'annoFiltro'   => (int) $anno,
+            ];
+        }
+
+        return view('budget.spese', compact('spese', 'totale', 'categories', 'categorie', 'anno', 'mese', 'categoriaFiltro', 'grafico'));
     }
 
     public function edit(BudgetExpense $expense)

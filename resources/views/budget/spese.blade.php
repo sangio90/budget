@@ -47,6 +47,129 @@
         @endif
     </form>
 
+    {{-- Grafico categoria --}}
+    @if($categoriaFiltro && $grafico)
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-5"
+         x-data="graficoCategoria(@json($grafico))">
+
+        {{-- Header + totali --}}
+        <div class="flex flex-wrap items-start justify-between gap-4 mb-4">
+            <h2 class="text-base font-semibold text-slate-800">
+                Andamento <span class="font-bold text-slate-900">{{ $categoriaFiltro }}</span>
+            </h2>
+            <div class="flex flex-wrap gap-5">
+                <div>
+                    <div class="text-xs text-slate-400 mb-0.5">Budget (al {{ $grafico['alData'] }})</div>
+                    <div class="text-sm font-bold text-slate-700">{{ number_format($grafico['totaleBudget'], 0, ',', '.') }} €</div>
+                </div>
+                <div>
+                    <div class="text-xs text-slate-400 mb-0.5">Speso (al {{ $grafico['alData'] }})</div>
+                    <div class="text-sm font-bold {{ $grafico['totaleSpeso'] > $grafico['totaleBudget'] ? 'text-red-500' : 'text-emerald-600' }}">
+                        {{ number_format($grafico['totaleSpeso'], 0, ',', '.') }} €
+                    </div>
+                </div>
+                @php $diff = $grafico['totaleBudget'] - $grafico['totaleSpeso']; @endphp
+                <div>
+                    <div class="text-xs text-slate-400 mb-0.5">Differenza</div>
+                    <div class="text-sm font-bold {{ $diff >= 0 ? 'text-emerald-600' : 'text-red-500' }}">
+                        {{ $diff >= 0 ? '+' : '' }}{{ number_format($diff, 0, ',', '.') }} €
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {{-- Tab anni --}}
+        <div class="flex gap-1 bg-slate-100 p-1 rounded-xl mb-4 w-fit">
+            @foreach($grafico['anni'] as $a)
+                <button @click="setAnno({{ $a }})"
+                        :class="annoAttivo === {{ $a }} ? 'bg-white shadow-sm text-slate-800 font-semibold' : 'text-slate-500 font-medium'"
+                        class="px-3 py-1.5 text-xs rounded-lg transition-all duration-200">
+                    {{ $a }}
+                </button>
+            @endforeach
+        </div>
+
+        {{-- Canvas --}}
+        <div class="relative" style="height: 220px;">
+            <canvas x-ref="canvas"></canvas>
+        </div>
+    </div>
+
+    <script>
+    function graficoCategoria(grafico) {
+        return {
+            annoAttivo: grafico.anni.includes(grafico.annoFiltro) ? grafico.annoFiltro : grafico.anni[grafico.anni.length - 1],
+            chart: null,
+            labels: ['Gen','Feb','Mar','Apr','Mag','Giu','Lug','Ago','Set','Ott','Nov','Dic'],
+
+            init() {
+                this.$nextTick(() => this.buildChart());
+                this.$watch('annoAttivo', () => this.updateChart());
+            },
+
+            setAnno(a) { this.annoAttivo = a; },
+
+            getDatasets() {
+                const d      = grafico.dati[this.annoAttivo] || [];
+                const budget = d.map(m => m.budget);
+                const speso  = d.map(m => m.speso);
+                return [
+                    {
+                        label: 'Budget',
+                        data: budget,
+                        backgroundColor: 'rgba(99,102,241,0.30)',
+                        borderColor: 'rgba(99,102,241,0.75)',
+                        borderWidth: 1,
+                        borderRadius: 4,
+                        order: 2,
+                    },
+                    {
+                        label: 'Speso',
+                        data: speso,
+                        backgroundColor: speso.map((v, i) => v > budget[i] ? 'rgba(239,68,68,0.55)' : 'rgba(16,185,129,0.50)'),
+                        borderColor:     speso.map((v, i) => v > budget[i] ? 'rgba(239,68,68,0.85)' : 'rgba(16,185,129,0.85)'),
+                        borderWidth: 1,
+                        borderRadius: 4,
+                        order: 1,
+                    }
+                ];
+            },
+
+            buildChart() {
+                if (!window.Chart) return;
+                this.chart = new Chart(this.$refs.canvas.getContext('2d'), {
+                    type: 'bar',
+                    data: { labels: this.labels, datasets: this.getDatasets() },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 11 } } },
+                            tooltip: {
+                                callbacks: {
+                                    label: c => `${c.dataset.label}: ${c.parsed.y.toLocaleString('it-IT')} €`
+                                }
+                            }
+                        },
+                        scales: {
+                            x: { grid: { display: false }, ticks: { font: { size: 11 } } },
+                            y: { ticks: { font: { size: 11 }, callback: v => v.toLocaleString('it-IT') + ' €' } }
+                        }
+                    }
+                });
+            },
+
+            updateChart() {
+                if (!this.chart) return;
+                this.chart.data.datasets = this.getDatasets();
+                this.chart.update();
+            }
+        };
+    }
+    </script>
+    @endif
+
     {{-- Lista --}}
     <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
         @if($spese->count())
