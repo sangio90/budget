@@ -50,52 +50,6 @@
     {{-- Grafico categoria --}}
     @if($categoriaFiltro && $grafico)
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-    <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-5"
-         x-data="graficoCategoria(@json($grafico))">
-
-        {{-- Header + totali --}}
-        <div class="flex flex-wrap items-start justify-between gap-4 mb-4">
-            <h2 class="text-base font-semibold text-slate-800">
-                Andamento <span class="font-bold text-slate-900">{{ $categoriaFiltro }}</span>
-            </h2>
-            <div class="flex flex-wrap gap-5">
-                <div>
-                    <div class="text-xs text-slate-400 mb-0.5">Budget (al {{ $grafico['alData'] }})</div>
-                    <div class="text-sm font-bold text-slate-700">{{ number_format($grafico['totaleBudget'], 0, ',', '.') }} €</div>
-                </div>
-                <div>
-                    <div class="text-xs text-slate-400 mb-0.5">Speso (al {{ $grafico['alData'] }})</div>
-                    <div class="text-sm font-bold {{ $grafico['totaleSpeso'] > $grafico['totaleBudget'] ? 'text-red-500' : 'text-emerald-600' }}">
-                        {{ number_format($grafico['totaleSpeso'], 0, ',', '.') }} €
-                    </div>
-                </div>
-                @php $diff = $grafico['totaleBudget'] - $grafico['totaleSpeso']; @endphp
-                <div>
-                    <div class="text-xs text-slate-400 mb-0.5">Differenza</div>
-                    <div class="text-sm font-bold {{ $diff >= 0 ? 'text-emerald-600' : 'text-red-500' }}">
-                        {{ $diff >= 0 ? '+' : '' }}{{ number_format($diff, 0, ',', '.') }} €
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        {{-- Tab anni --}}
-        <div class="flex gap-1 bg-slate-100 p-1 rounded-xl mb-4 w-fit">
-            @foreach($grafico['anni'] as $a)
-                <button @click="setAnno({{ $a }})"
-                        :class="annoAttivo === {{ $a }} ? 'bg-white shadow-sm text-slate-800 font-semibold' : 'text-slate-500 font-medium'"
-                        class="px-3 py-1.5 text-xs rounded-lg transition-all duration-200">
-                    {{ $a }}
-                </button>
-            @endforeach
-        </div>
-
-        {{-- Canvas --}}
-        <div class="relative" style="height: 220px;">
-            <canvas x-ref="canvas"></canvas>
-        </div>
-    </div>
-
     <script>
     function graficoCategoria(grafico) {
         return {
@@ -168,6 +122,51 @@
         };
     }
     </script>
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-5"
+         x-data="graficoCategoria(@json($grafico))">
+
+        {{-- Header + totali --}}
+        <div class="flex flex-wrap items-start justify-between gap-4 mb-4">
+            <h2 class="text-base font-semibold text-slate-800">
+                Andamento <span class="font-bold text-slate-900">{{ $categoriaFiltro }}</span>
+            </h2>
+            <div class="flex flex-wrap gap-5">
+                <div>
+                    <div class="text-xs text-slate-400 mb-0.5">Budget (al {{ $grafico['alData'] }})</div>
+                    <div class="text-sm font-bold text-slate-700">{{ number_format($grafico['totaleBudget'], 0, ',', '.') }} €</div>
+                </div>
+                <div>
+                    <div class="text-xs text-slate-400 mb-0.5">Speso (al {{ $grafico['alData'] }})</div>
+                    <div class="text-sm font-bold {{ $grafico['totaleSpeso'] > $grafico['totaleBudget'] ? 'text-red-500' : 'text-emerald-600' }}">
+                        {{ number_format($grafico['totaleSpeso'], 0, ',', '.') }} €
+                    </div>
+                </div>
+                @php $diff = $grafico['totaleBudget'] - $grafico['totaleSpeso']; @endphp
+                <div>
+                    <div class="text-xs text-slate-400 mb-0.5">Differenza</div>
+                    <div class="text-sm font-bold {{ $diff >= 0 ? 'text-emerald-600' : 'text-red-500' }}">
+                        {{ $diff >= 0 ? '+' : '' }}{{ number_format($diff, 0, ',', '.') }} €
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {{-- Tab anni --}}
+        <div class="flex gap-1 bg-slate-100 p-1 rounded-xl mb-4 w-fit">
+            @foreach($grafico['anni'] as $a)
+                <button @click="setAnno({{ $a }})"
+                        :class="annoAttivo === {{ $a }} ? 'bg-white shadow-sm text-slate-800 font-semibold' : 'text-slate-500 font-medium'"
+                        class="px-3 py-1.5 text-xs rounded-lg transition-all duration-200">
+                    {{ $a }}
+                </button>
+            @endforeach
+        </div>
+
+        {{-- Canvas --}}
+        <div class="relative" style="height: 220px;">
+            <canvas x-ref="canvas"></canvas>
+        </div>
+    </div>
     @endif
 
     {{-- Lista --}}
