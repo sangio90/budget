@@ -41,23 +41,31 @@ class BudgetController extends Controller
 
     public function spese(Request $request)
     {
-        $anno = $request->input('anno', now()->year);
-        $mese = $request->input('mese', now()->month);
+        $search          = trim($request->input('q', ''));
+        $anno            = $request->input('anno', $search ? '' : now()->year);
+        $mese            = $request->input('mese', $search ? '' : now()->month);
         $categoriaFiltro = $request->input('categoria', '');
 
         $categories = BudgetCategory::with('amounts')->orderBy('sort_order')->orderBy('categoria')->get();
-        $categorie = $categories->pluck('categoria')->unique()->values();
+        $categorie  = $categories->pluck('categoria')->unique()->values();
 
         $query = BudgetExpense::with('category')
-            ->where('user_id', auth()->id())
-            ->whereYear('data', $anno);
+            ->where('user_id', auth()->id());
 
+        if ($anno) {
+            $query->whereYear('data', $anno);
+        }
         if ($mese) {
             $query->whereMonth('data', $mese);
         }
-
         if ($categoriaFiltro) {
             $query->whereHas('category', fn($q) => $q->where('categoria', $categoriaFiltro));
+        }
+        if ($search) {
+            $query->where(function ($sub) use ($search) {
+                $sub->where('note', 'like', "%{$search}%")
+                    ->orWhereHas('category', fn($cq) => $cq->where('nome', 'like', "%{$search}%"));
+            });
         }
 
         $spese = $query->orderByDesc('data')->orderByDesc('id')->get();
@@ -123,13 +131,13 @@ class BudgetController extends Controller
                 'totaleBudget' => $totaleBudget,
                 'totaleSpeso'  => $totaleSpeso,
                 'alData'        => $fineMesePrecedente->translatedFormat('d F Y'),
-                'annoFiltro'    => (int) $anno,
+                'annoFiltro'    => (int) ($anno ?: now()->year),
                 'annoCorrente'  => now()->year,
                 'meseCorrente'  => now()->month,
             ];
         }
 
-        return view('budget.spese', compact('spese', 'totale', 'categories', 'categorie', 'anno', 'mese', 'categoriaFiltro', 'grafico'));
+        return view('budget.spese', compact('spese', 'totale', 'categories', 'categorie', 'anno', 'mese', 'categoriaFiltro', 'grafico', 'search'));
     }
 
     public function edit(BudgetExpense $expense)

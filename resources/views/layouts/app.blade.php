@@ -13,6 +13,7 @@
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
         <meta name="apple-mobile-web-app-title" content="FamBudget">
         <meta name="theme-color" content="#0f172a">
+        <style>[x-cloak]{display:none!important}</style>
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700&display=swap" rel="stylesheet" />
         @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -63,13 +64,45 @@
             {{-- Main content --}}
             <div class="flex-1 lg:ml-60">
 
+                {{-- Desktop search bar --}}
+                <header class="hidden lg:flex items-center justify-end px-6 py-3 bg-white border-b border-slate-100 sticky top-0 z-30">
+                    <form method="GET" action="{{ route('budget.spese') }}">
+                        <div class="relative">
+                            <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0"/>
+                            </svg>
+                            <input type="text" name="q" value="{{ request('q') }}"
+                                   placeholder="Cerca spese e note..."
+                                   class="pl-11 pr-4 py-2 text-sm border border-slate-200 rounded-xl w-72 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary-500 transition">
+                        </div>
+                    </form>
+                </header>
+
                 {{-- Mobile top bar --}}
-                <header class="lg:hidden bg-slate-900 text-white px-4 py-3 flex items-center justify-between sticky top-0 z-40">
-                    <a href="{{ route('dashboard') }}" class="flex items-center gap-2">
+                <header class="lg:hidden bg-slate-900 text-white px-4 py-3 flex items-center gap-3 sticky top-0 z-40"
+                        x-data="{ qs: false }">
+                    <a href="{{ route('dashboard') }}" class="flex items-center gap-2 flex-shrink-0" x-show="!qs">
                         <span class="text-xl">💰</span>
                         <span class="font-bold">FamBudget</span>
                     </a>
-                    <span class="text-sm text-slate-400">{{ auth()->user()->name }}</span>
+                    <form x-show="qs" x-cloak method="GET" action="{{ route('budget.spese') }}" class="flex-1 flex items-center">
+                        <input type="text" name="q" x-ref="qi"
+                               placeholder="Cerca spese e note..."
+                               class="flex-1 bg-slate-800 text-white placeholder-slate-500 text-sm border border-slate-600 rounded-lg px-3 py-1.5 focus:outline-none focus:border-primary-400">
+                    </form>
+                    <div class="ml-auto flex items-center gap-2 flex-shrink-0">
+                        <span x-show="!qs" class="text-sm text-slate-400">{{ auth()->user()->name }}</span>
+                        <button type="button"
+                                @click="qs = !qs; if (qs) $nextTick(() => $refs.qi.focus())"
+                                class="text-slate-400 hover:text-white transition p-1">
+                            <svg x-show="!qs" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0"/>
+                            </svg>
+                            <svg x-show="qs" x-cloak class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                            </svg>
+                        </button>
+                    </div>
                 </header>
 
                 {{-- Flash messages --}}

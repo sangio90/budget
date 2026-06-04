@@ -4,7 +4,12 @@
     <div class="flex items-center justify-between flex-wrap gap-3">
         <div>
             <h1 class="text-2xl font-bold text-slate-900">Spese Budget</h1>
-            <p class="text-sm text-slate-500 mt-0.5">{{ $spese->count() }} voci · totale {{ number_format($totale, 2, ',', '.') }} €</p>
+            <p class="text-sm text-slate-500 mt-0.5">
+                {{ $spese->count() }} voci · totale {{ number_format($totale, 2, ',', '.') }} €
+                @if($search)
+                    · <span class="text-primary-600 font-medium">ricerca: "{{ $search }}"</span>
+                @endif
+            </p>
         </div>
         <a href="{{ route('budget.index') }}"
             class="flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white text-sm font-semibold px-4 py-2.5 rounded-xl transition">
@@ -18,6 +23,7 @@
         <div>
             <label class="block text-xs font-medium text-slate-500 mb-1">Anno</label>
             <select name="anno" onchange="this.form.submit()" class="border border-slate-200 rounded-lg px-3 py-2 pr-8 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primary-500">
+                <option value="" {{ $anno === '' ? 'selected' : '' }}>Tutti</option>
                 @foreach([2024, 2025, 2026] as $a)
                     <option value="{{ $a }}" {{ $anno == $a ? 'selected' : '' }}>{{ $a }}</option>
                 @endforeach
@@ -42,7 +48,20 @@
                 @endforeach
             </select>
         </div>
-        @if($categoriaFiltro || $mese != now()->month || $anno != now()->year)
+        <div>
+            <label class="block text-xs font-medium text-slate-500 mb-1">Cerca</label>
+            <div class="flex items-center gap-1">
+                <input type="text" name="q" value="{{ $search }}"
+                       placeholder="voce o nota..."
+                       class="border border-slate-200 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primary-500 w-40">
+                <button type="submit" class="p-2 text-slate-400 hover:text-primary-600 transition" title="Cerca">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        @if($search || $categoriaFiltro || $mese != now()->month || $anno != now()->year)
             <a href="{{ route('budget.spese') }}" class="text-sm text-slate-400 hover:text-slate-600 py-2">Azzera</a>
         @endif
     </form>
