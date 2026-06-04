@@ -77,6 +77,7 @@ class BudgetController extends Controller
 
             $anni = $tuteLeSpese
                 ->map(fn($e) => $e->data?->year)
+                ->toBase()
                 ->filter()
                 ->push(now()->year)
                 ->unique()->sort()->values()->toArray();
