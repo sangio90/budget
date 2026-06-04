@@ -76,11 +76,13 @@ class BudgetController extends Controller
                 ->get(['data', 'importo']);
 
             $anni = $tuteLeSpese
-                ->map(fn($e) => $e->data->year)
+                ->map(fn($e) => $e->data?->year)
+                ->filter()
                 ->push(now()->year)
                 ->unique()->sort()->values()->toArray();
 
             $spesePerAnnoMese = $tuteLeSpese
+                ->filter(fn($e) => $e->data !== null)
                 ->groupBy(fn($e) => $e->data->year)
                 ->map(fn($byYear) => $byYear
                     ->groupBy(fn($e) => $e->data->month)
@@ -109,7 +111,7 @@ class BudgetController extends Controller
             $totaleBudget       = round($budgetMensileTot * $meseTot, 2);
             $totaleSpeso        = round(
                 $tuteLeSpese
-                    ->filter(fn($e) => $e->data->year === $annoTot && $e->data->month <= $meseTot)
+                    ->filter(fn($e) => $e->data !== null && $e->data->year === $annoTot && $e->data->month <= $meseTot)
                     ->sum('importo'),
                 2
             );
