@@ -85,7 +85,7 @@ class TransactionController extends Controller
     {
         $granTotale  = $entrate - $uscite - $f24;
         $iva         = $entrate * 0.22;
-        $imponibile  = $granTotale - $iva;
+        $imponibile  = ($entrate - $uscite) - $iva;
 
         $irpef = function (float $base): float {
             if ($base <= 0)      return 0;
