@@ -11,7 +11,7 @@
                 @endif
             </p>
         </div>
-        <a href="{{ route('budget.index') }}"
+        <a href="{{ route('budget.index', $categoriaFiltro ? ['categoria' => $categoriaFiltro] : []) }}"
             class="flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white text-sm font-semibold px-4 py-2.5 rounded-xl transition">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
             Nuova spesa

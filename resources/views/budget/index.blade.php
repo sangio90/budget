@@ -90,14 +90,14 @@
                     @input="noteOnInput()"
                     @keydown.arrow-down.prevent="noteMoveDown()"
                     @keydown.arrow-up.prevent="noteMoveUp()"
-                    @keydown.enter.prevent="noteSelectHighlighted()"
+                    @keydown.enter.prevent="noteEnter($event)"
                     @keydown.escape="noteClose()"
                     @focus="noteOnInput()"
                     @click.outside="noteClose()"
                     autocomplete="off"
                     class="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500">
                 <ul x-show="noteOpen && noteSuggestions.length"
-                    class="absolute z-20 left-0 right-0 mt-1 bg-white border border-slate-200 rounded-xl shadow-lg overflow-hidden text-sm">
+                    class="mt-1 bg-white border border-slate-200 rounded-xl shadow-lg overflow-hidden text-sm">
                     <template x-for="(s, i) in noteSuggestions" :key="s">
                         <li @mousedown.prevent="noteSelect(s)"
                             :class="i === noteHighlighted ? 'bg-primary-50 text-primary-700' : 'text-slate-700 hover:bg-slate-50'"
@@ -222,6 +222,15 @@ function budgetApp() {
             }
         },
 
+        noteEnter(e) {
+            if (this.noteOpen && this.noteHighlighted >= 0) {
+                this.noteSelectHighlighted();
+            } else {
+                this.noteClose();
+                e.target.form.requestSubmit();
+            }
+        },
+
         noteMoveDown() {
             if (!this.noteOpen) { this.noteOnInput(); return; }
             this.noteHighlighted = Math.min(this.noteHighlighted + 1, this.noteSuggestions.length - 1);
@@ -231,6 +240,12 @@ function budgetApp() {
 
         init() {
             const oldId = @json(old('budget_category_id') ?? session('last_category_id'));
+            const presetCategoria = @json(request('categoria'));
+            const oldItem = oldId ? this.allItems.find(i => i.id == oldId) : null;
+            if (presetCategoria && (!oldItem || oldItem.categoria !== presetCategoria)) {
+                const catObj = this.categorieList.find(c => c.value === presetCategoria);
+                if (catObj) { this.catSelect(catObj); return; }
+            }
             if (oldId) {
                 const item = this.allItems.find(i => i.id == oldId);
                 if (item) {
