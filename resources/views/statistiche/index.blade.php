@@ -128,7 +128,8 @@
         const speseUrl = @json(route('budget.spese'));
         const altre    = @json(\App\Http\Controllers\StatisticheController::ALTRE);
         const altreCategorie = @json($altreCategorie);
-        const euro     = v => v.toLocaleString('it-IT', { maximumFractionDigits: 0 }) + ' €';
+        // Come number_format(…, 0, ',', '.'): toLocaleString('it-IT') non separa le migliaia sotto 10.000
+        const euro     = v => Math.round(v).toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.') + ' €';
         const categorie = Object.keys(serie);
 
         // Ogni barra è ordinata per il suo mese: la spesa più grande in basso, la più piccola in alto.
