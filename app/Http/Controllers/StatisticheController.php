@@ -59,8 +59,21 @@ class StatisticheController extends Controller
             $mesi[] = round(array_sum(array_column($serie, $m)), 2);
         }
 
-        $budgetMensile = BudgetCategory::with('amounts')->get()
-            ->sum(fn($c) => $c->importiPerAnno($anno)['mensile']);
+        $categorie     = BudgetCategory::with('amounts')->get();
+        $budgetMensile = $categorie->sum(fn($c) => $c->importiPerAnno($anno)['mensile']);
+
+        // Categorie confluite in "Altre categorie": tutte tranne quelle mostrate nel grafico
+        $altreCategorie = $categorie->pluck('categoria')->unique()
+            ->diff(array_keys($serie))
+            ->sort()->values();
+
+        // Budget mensile di ogni voce della legenda, per ricalcolare il budget quando se ne spegne qualcuna
+        $budgetDi = fn($nomi) => round($categorie->whereIn('categoria', $nomi)
+            ->sum(fn($c) => $c->importiPerAnno($anno)['mensile']), 2);
+        $budgetPerSerie = [];
+        foreach (array_keys($serie) as $cat) {
+            $budgetPerSerie[$cat] = $budgetDi($cat === self::ALTRE ? $altreCategorie : [$cat]);
+        }
 
         // Per l'anno in corso la media considera solo i mesi trascorsi
         $mesiTrascorsi = $anno === now()->year ? now()->month : 12;
@@ -73,8 +86,11 @@ class StatisticheController extends Controller
             'anno'          => $anno,
             'serie'         => $serie,
             'colori'        => $this->coloriCategorie(array_keys($serie)),
+            'altreCategorie' => $altreCategorie,
             'mesi'          => $mesi,
             'budgetMensile' => round($budgetMensile, 2),
+            'budgetPerSerie' => $budgetPerSerie,
+            'mesiTrascorsi' => $mesiTrascorsi,
             'totale'        => $totale,
             'media'         => $media,
             'meseMax'       => $meseMax,

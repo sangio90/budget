@@ -2,7 +2,7 @@
 <div class="px-4 py-6 max-w-lg mx-auto space-y-5" x-data="editApp()">
 
     <div class="flex items-center gap-3">
-        <a href="{{ route('budget.spese') }}" class="text-slate-400 hover:text-slate-600 transition">
+        <a href="{{ $back ?? route('budget.spese') }}" class="text-slate-400 hover:text-slate-600 transition">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
         </a>
         <div>
@@ -15,6 +15,9 @@
         <form method="POST" action="{{ route('budget.update', $expense) }}" class="px-5 py-5 space-y-4">
             @csrf
             @method('PUT')
+            @if($back)
+                <input type="hidden" name="back" value="{{ $back }}">
+            @endif
 
             <div>
                 <label class="block text-xs font-medium text-slate-600 mb-1.5">Categoria</label>
@@ -62,7 +65,7 @@
             </div>
 
             <div class="flex gap-3 pt-1">
-                <a href="{{ route('budget.spese') }}"
+                <a href="{{ $back ?? route('budget.spese') }}"
                     class="flex-1 text-center border border-slate-200 text-slate-600 font-semibold py-3 rounded-xl transition text-sm hover:bg-slate-50">
                     Annulla
                 </a>

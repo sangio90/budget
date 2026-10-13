@@ -44,10 +44,11 @@ class BudgetController extends Controller
         $search          = trim($request->input('q', ''));
         $anno            = $request->input('anno', $search ? '' : now()->year);
         $mese            = $request->input('mese', $search ? '' : now()->month);
-        $categoriaFiltro = $request->input('categoria', '');
+        // Filtro categoria a scelta multipla (accetta anche un singolo valore, es. link dalla dashboard)
+        $categorieFiltro = array_values(array_filter((array) $request->input('categoria', []), 'strlen'));
 
         $categories = BudgetCategory::with('amounts')->orderBy('sort_order')->orderBy('categoria')->get();
-        $categorie  = $categories->pluck('categoria')->unique()->values();
+        $categorie  = $categories->pluck('categoria')->unique()->sort(SORT_NATURAL | SORT_FLAG_CASE)->values();
 
         $query = BudgetExpense::with('category')
             ->where('user_id', auth()->id());
@@ -58,8 +59,8 @@ class BudgetController extends Controller
         if ($mese) {
             $query->whereMonth('data', $mese);
         }
-        if ($categoriaFiltro) {
-            $query->whereHas('category', fn($q) => $q->where('categoria', $categoriaFiltro));
+        if ($categorieFiltro) {
+            $query->whereHas('category', fn($q) => $q->whereIn('categoria', $categorieFiltro));
         }
         if ($search) {
             $query->where(function ($sub) use ($search) {
@@ -73,8 +74,8 @@ class BudgetController extends Controller
         $totale = $spese->sum('importo');
 
         $grafico = null;
-        if ($categoriaFiltro) {
-            $catsGruppo = $categories->where('categoria', $categoriaFiltro)->values();
+        if ($categorieFiltro) {
+            $catsGruppo = $categories->whereIn('categoria', $categorieFiltro)->values();
             $catIds     = $catsGruppo->pluck('id');
 
             // Carico tutte le spese della categoria una volta sola (aggregazione in PHP,
@@ -137,14 +138,19 @@ class BudgetController extends Controller
             ];
         }
 
-        return view('budget.spese', compact('spese', 'totale', 'categories', 'categorie', 'anno', 'mese', 'categoriaFiltro', 'grafico', 'search'));
+        return view('budget.spese', compact('spese', 'totale', 'categories', 'categorie', 'anno', 'mese', 'categorieFiltro', 'grafico', 'search'));
     }
 
     public function edit(BudgetExpense $expense)
     {
         abort_unless($expense->user_id === auth()->id(), 403);
         $categories = BudgetCategory::orderBy('sort_order')->orderBy('categoria')->get();
-        return view('budget.edit', compact('expense', 'categories'));
+
+        // Lista Spese (con i filtri) da cui si è arrivati, per tornarci dopo il salvataggio.
+        // old() conserva il valore quando la validazione fallisce e si ricarica il form.
+        $back = $this->urlListaSpese(old('back', url()->previous()));
+
+        return view('budget.edit', compact('expense', 'categories', 'back'));
     }
 
     public function update(Request $request, BudgetExpense $expense)
@@ -160,10 +166,10 @@ class BudgetController extends Controller
 
         $expense->update($validated);
 
-        return redirect()->route('budget.spese', [
-            'anno' => $expense->data->year,
-            'mese' => $expense->data->month,
-        ])->with('success', 'Spesa aggiornata correttamente.');
+        $back = $this->urlListaSpese($request->input('back'))
+            ?? route('budget.spese', ['anno' => $expense->data->year, 'mese' => $expense->data->month]);
+
+        return redirect()->to($back)->with('success', 'Spesa aggiornata correttamente.');
     }
 
     public function destroy(BudgetExpense $expense)
@@ -178,5 +184,15 @@ class BudgetController extends Controller
         return response()->json(
             BudgetCategory::orderBy('sort_order')->orderBy('categoria')->get(['id', 'categoria', 'nome'])
         );
+    }
+
+    /**
+     * Restituisce l'URL solo se punta alla Lista Spese di questa app (evita open redirect).
+     */
+    private function urlListaSpese(?string $url): ?string
+    {
+        $base = route('budget.spese');
+
+        return $url && ($url === $base || str_starts_with($url, $base . '?')) ? $url : null;
     }
 }

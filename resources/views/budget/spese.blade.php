@@ -1,4 +1,8 @@
 <x-app-layout>
+@php
+    // Categoria singola selezionata (per precompilare "Nuova spesa")
+    $categoriaSingola = count($categorieFiltro) === 1 ? $categorieFiltro[0] : null;
+@endphp
 <div class="px-4 py-6 max-w-7xl mx-auto space-y-5">
 
     <div class="flex items-center justify-between flex-wrap gap-3">
@@ -11,7 +15,7 @@
                 @endif
             </p>
         </div>
-        <a href="{{ route('budget.index', $categoriaFiltro ? ['categoria' => $categoriaFiltro] : []) }}"
+        <a href="{{ route('budget.index', $categoriaSingola ? ['categoria' => $categoriaSingola] : []) }}"
             class="flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white text-sm font-semibold px-4 py-2.5 rounded-xl transition">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
             Nuova spesa
@@ -39,14 +43,51 @@
                 @endforeach
             </select>
         </div>
-        <div>
+        <div class="relative"
+             x-data="{
+                 open: false,
+                 sel: @js($categorieFiltro),
+                 iniziale: [...@js($categorieFiltro)].sort().join('|'),
+                 get etichetta() {
+                     if (!this.sel.length) return 'Tutte';
+                     if (this.sel.length === 1) return this.sel[0];
+                     return this.sel.length + ' categorie';
+                 },
+                 chiudi() {
+                     if (!this.open) return;
+                     this.open = false;
+                     // Ricarica la lista solo se la selezione è cambiata
+                     if ([...this.sel].sort().join('|') !== this.iniziale) {
+                         this.$nextTick(() => this.$root.closest('form').submit());
+                     }
+                 }
+             }"
+             @click.outside="chiudi()" @keydown.escape.window="chiudi()">
             <label class="block text-xs font-medium text-slate-500 mb-1">Categoria</label>
-            <select name="categoria" onchange="this.form.submit()" class="border border-slate-200 rounded-lg px-3 py-2 pr-8 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primary-500 min-w-[9rem]">
-                <option value="">Tutte</option>
-                @foreach($categorie as $cat)
-                    <option value="{{ $cat }}" {{ $categoriaFiltro == $cat ? 'selected' : '' }}>{{ $cat }}</option>
-                @endforeach
-            </select>
+            <button type="button" @click="open ? chiudi() : open = true"
+                    class="flex items-center justify-between gap-2 border border-slate-200 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primary-500 min-w-[9rem] max-w-[14rem]">
+                <span class="truncate" x-text="etichetta"></span>
+                <svg class="w-4 h-4 text-slate-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            </button>
+            <template x-for="c in sel" :key="c">
+                <input type="hidden" name="categoria[]" :value="c">
+            </template>
+            <div x-show="open" x-cloak
+                 class="absolute z-20 mt-1 w-60 bg-white border border-slate-200 rounded-xl shadow-lg py-1">
+                <div class="flex items-center justify-between px-3 py-2 border-b border-slate-100 text-xs">
+                    <button type="button" @click="sel = []" class="text-slate-500 hover:text-slate-700">Tutte</button>
+                    <button type="button" @click="chiudi()" class="font-semibold text-primary-600 hover:text-primary-700">Applica</button>
+                </div>
+                <div class="max-h-72 overflow-y-auto">
+                    @foreach($categorie as $cat)
+                        <label class="flex items-center gap-2 px-3 py-1.5 text-sm text-slate-700 hover:bg-slate-50 cursor-pointer">
+                            <input type="checkbox" value="{{ $cat }}" x-model="sel"
+                                   class="rounded border-slate-300 text-primary-600 focus:ring-primary-500">
+                            {{ $cat }}
+                        </label>
+                    @endforeach
+                </div>
+            </div>
         </div>
         <div>
             <label class="block text-xs font-medium text-slate-500 mb-1">Cerca</label>
@@ -61,13 +102,13 @@
                 </button>
             </div>
         </div>
-        @if($search || $categoriaFiltro || $mese != now()->month || $anno != now()->year)
+        @if($search || $categorieFiltro || $mese != now()->month || $anno != now()->year)
             <a href="{{ route('budget.spese') }}" class="text-sm text-slate-400 hover:text-slate-600 py-2">Azzera</a>
         @endif
     </form>
 
     {{-- Grafico categoria --}}
-    @if($categoriaFiltro && $grafico)
+    @if($categorieFiltro && $grafico)
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <script>
     var _graficoData = @json($grafico);
@@ -155,7 +196,7 @@
         {{-- Header + totali --}}
         <div class="flex flex-wrap items-start justify-between gap-4 mb-4">
             <h2 class="text-base font-semibold text-slate-800">
-                Andamento <span class="font-bold text-slate-900">{{ $categoriaFiltro }}</span>
+                Andamento <span class="font-bold text-slate-900">{{ count($categorieFiltro) <= 3 ? implode(', ', $categorieFiltro) : count($categorieFiltro) . ' categorie' }}</span>
             </h2>
             <div class="flex flex-wrap gap-5">
                 <div>
