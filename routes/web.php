@@ -6,6 +6,7 @@ use App\Http\Controllers\BudgetController;
 use App\Http\Controllers\BudgetAmountController;
 use App\Http\Controllers\BudgetCategoryController;
 use App\Http\Controllers\TransactionController;
+use App\Http\Controllers\StatisticheController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', fn() => redirect()->route('dashboard'));
@@ -30,6 +31,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/budget/{expense}/edit', [BudgetController::class, 'edit'])->name('budget.edit');
     Route::put('/budget/{expense}', [BudgetController::class, 'update'])->name('budget.update');
     Route::delete('/budget/{expense}', [BudgetController::class, 'destroy'])->name('budget.destroy');
+
+    Route::get('/statistiche', [StatisticheController::class, 'index'])->name('statistiche.index');
 
     Route::get('/transazioni', [TransactionController::class, 'index'])->name('transactions.index');
     Route::post('/transazioni', [TransactionController::class, 'store'])->name('transactions.store');

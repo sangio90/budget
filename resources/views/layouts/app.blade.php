@@ -42,6 +42,10 @@
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
                         Lista Spese
                     </a>
+                    <a href="{{ route('statistiche.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium {{ request()->routeIs('statistiche.*') ? 'bg-primary-600 text-white' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }} transition">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"/></svg>
+                        Statistiche
+                    </a>
                     <a href="{{ route('budget.importi') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium {{ request()->routeIs('budget.importi*') ? 'bg-primary-600 text-white' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }} transition">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/></svg>
                         Imposta Budget
@@ -91,7 +95,10 @@
                                class="flex-1 bg-slate-800 text-white placeholder-slate-500 text-sm border border-slate-600 rounded-lg px-3 py-1.5 focus:outline-none focus:border-primary-400">
                     </form>
                     <div class="ml-auto flex items-center gap-2 flex-shrink-0">
-                        <span x-show="!qs" class="text-sm text-slate-400">{{ auth()->user()->name }}</span>
+                        <a x-show="!qs" href="{{ route('profile.edit') }}" class="flex items-center gap-1.5 text-sm {{ request()->routeIs('profile.*') ? 'text-primary-400' : 'text-slate-400 hover:text-white' }} transition">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                            {{ auth()->user()->name }}
+                        </a>
                         <button type="button"
                                 @click="qs = !qs; if (qs) $nextTick(() => $refs.qi.focus())"
                                 class="text-slate-400 hover:text-white transition p-1">
@@ -133,13 +140,13 @@
                 <svg class="w-6 h-6 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/></svg>
                 Lista
             </a>
+            <a href="{{ route('statistiche.index') }}" class="flex-1 flex flex-col items-center py-3 text-xs {{ request()->routeIs('statistiche.*') ? 'text-primary-400' : 'text-slate-400' }}">
+                <svg class="w-6 h-6 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"/></svg>
+                Stat.
+            </a>
             <a href="{{ route('transactions.index') }}" class="flex-1 flex flex-col items-center py-3 text-xs {{ request()->routeIs('transactions.*') ? 'text-primary-400' : 'text-slate-400' }}">
                 <svg class="w-6 h-6 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>
                 Mov.
-            </a>
-            <a href="{{ route('profile.edit') }}" class="flex-1 flex flex-col items-center py-3 text-xs {{ request()->routeIs('profile.*') ? 'text-primary-400' : 'text-slate-400' }}">
-                <svg class="w-6 h-6 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
-                Profilo
             </a>
         </nav>
         <script>
