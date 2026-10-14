@@ -14,8 +14,8 @@ class BudgetAmountController extends Controller
         $anni = [2024, 2025, 2026, 2027];
 
         $categories = BudgetCategory::with(['amounts' => fn($q) => $q->where('anno', $anno)])
-            ->orderBy('sort_order')
             ->orderBy('categoria')
+            ->orderBy('nome')
             ->get();
 
         // Prepara dati con importi effettivi per l'anno selezionato
