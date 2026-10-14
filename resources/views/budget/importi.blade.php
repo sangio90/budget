@@ -4,7 +4,7 @@
     <div class="flex items-start justify-between flex-wrap gap-3">
         <div>
             <h1 class="text-2xl font-bold text-slate-900">Budget per Anno</h1>
-            <p class="text-sm text-slate-500 mt-0.5">Modifica i budget annuali per categoria. Il mensile viene calcolato automaticamente (annuale ÷ 12).</p>
+            <p class="text-sm text-slate-500 mt-0.5">Modifica i budget annuali per categoria. Il mensile viene calcolato automaticamente (annuale ÷ 12).<span class="hidden lg:inline"> Trascina una voce dalla maniglia per spostarla in un'altra categoria.</span></p>
         </div>
         {{-- Selettore anno --}}
         <div class="flex gap-2 flex-wrap">
@@ -61,7 +61,11 @@
 
         <div class="space-y-3">
             @foreach($rows as $catName => $items)
-                <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden transition"
+                    :class="dropCat === @js($catName) ? 'ring-2 ring-primary-400 border-primary-300' : ''"
+                    @dragover="onDragOver($event, @js($catName))"
+                    @dragleave="onDragLeave($event)"
+                    @drop.prevent="dropVoce(@js($catName))">
                     {{-- Header categoria --}}
                     <div class="px-5 py-3 bg-slate-50 border-b border-slate-100 flex items-center justify-between gap-2">
                         <span class="font-semibold text-slate-700 text-sm">{{ $catName }}</span>
@@ -94,8 +98,18 @@
                     {{-- Righe voci --}}
                     <div class="divide-y divide-slate-50">
                         @foreach($items as $item)
-                            <div class="px-5 py-3 flex items-center gap-4 flex-wrap sm:flex-nowrap"
+                            <div class="px-5 py-3 flex items-center gap-4 flex-wrap sm:flex-nowrap transition-opacity"
+                                :class="dragVoceId === {{ $item['id'] }} ? 'opacity-40' : ''"
                                 x-data="{ annuale: {{ $item['importo_annuale'] }}, mensile: {{ $item['importo_mensile'] }} }">
+
+                                {{-- Maniglia drag & drop (solo desktop) --}}
+                                <div draggable="true"
+                                    @dragstart="startDrag($event, {{ $item['id'] }}, @js($catName))"
+                                    @dragend="endDrag()"
+                                    title="Trascina in un'altra categoria"
+                                    class="hidden lg:block -ml-2 -mr-2 p-1 text-slate-300 hover:text-slate-500 cursor-grab active:cursor-grabbing">
+                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><circle cx="9" cy="6" r="1.5"/><circle cx="15" cy="6" r="1.5"/><circle cx="9" cy="12" r="1.5"/><circle cx="15" cy="12" r="1.5"/><circle cx="9" cy="18" r="1.5"/><circle cx="15" cy="18" r="1.5"/></svg>
+                                </div>
 
                                 {{-- Nome + badge override --}}
                                 <div class="flex-1 min-w-0">
@@ -190,6 +204,13 @@
         @csrf
         <input type="hidden" name="_method" value="DELETE">
         <input type="hidden" name="anno" value="{{ $anno }}">
+    </form>
+
+    <form x-ref="moveVoceForm" method="POST" :action="_voceMoveUrl" style="display:none">
+        @csrf
+        <input type="hidden" name="_method" value="PATCH">
+        <input type="hidden" name="anno" value="{{ $anno }}">
+        <input type="hidden" name="categoria" :value="_voceMoveCat">
     </form>
 
     <form x-ref="deleteCatForm" method="POST" action="{{ route('budget.categorie.destroy') }}" style="display:none">
@@ -315,6 +336,47 @@ function importiApp() {
         rinominaNuovoNome: '',
         categorieList: @json($rows->keys()->values()),
 
+        // Drag & drop voce → altra categoria
+        dragVoceId: null,
+        dragFromCat: null,
+        dropCat: null,
+        modificato: false,
+        _voceMoveUrl: '',
+        _voceMoveCat: '',
+
+        startDrag(e, id, cat) {
+            this.dragVoceId = id;
+            this.dragFromCat = cat;
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/plain', String(id));
+            // Come anteprima del trascinamento usa l'intera riga, non solo la maniglia
+            e.dataTransfer.setDragImage(e.target.parentElement, 20, 20);
+        },
+
+        endDrag() { this.dragVoceId = null; this.dragFromCat = null; this.dropCat = null; },
+
+        onDragOver(e, cat) {
+            if (this.dragVoceId === null || cat === this.dragFromCat) return;
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+            this.dropCat = cat;
+        },
+
+        onDragLeave(e) {
+            if (!e.currentTarget.contains(e.relatedTarget)) this.dropCat = null;
+        },
+
+        dropVoce(cat) {
+            if (this.dragVoceId === null || cat === this.dragFromCat) return this.endDrag();
+            if (this.modificato && !confirm('Hai importi modificati non salvati che andranno persi. Spostare comunque la voce?')) {
+                return this.endDrag();
+            }
+            this._voceMoveUrl = `{{ url('budget/categorie/voce') }}/${this.dragVoceId}/sposta`;
+            this._voceMoveCat = cat;
+            this.endDrag();
+            this.$nextTick(() => this.$refs.moveVoceForm.submit());
+        },
+
         get voceModalAction() {
             return this.voceEditId
                 ? `{{ url('budget/categorie/voce') }}/${this.voceEditId}`
@@ -360,6 +422,7 @@ function importiApp() {
         },
 
         recalcTotals() {
+            this.modificato = true;
             let totA = 0;
             document.querySelectorAll('input[name^="importi["]').forEach(input => {
                 totA += parseFloat(input.value) || 0;

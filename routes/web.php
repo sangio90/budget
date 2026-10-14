@@ -20,6 +20,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::post('/budget/categorie/voce', [BudgetCategoryController::class, 'storeVoce'])->name('budget.categorie.voce.store');
     Route::put('/budget/categorie/voce/{category}', [BudgetCategoryController::class, 'updateVoce'])->name('budget.categorie.voce.update');
+    Route::patch('/budget/categorie/voce/{category}/sposta', [BudgetCategoryController::class, 'moveVoce'])->name('budget.categorie.voce.move');
     Route::delete('/budget/categorie/voce/{category}', [BudgetCategoryController::class, 'destroyVoce'])->name('budget.categorie.voce.destroy');
     Route::post('/budget/categorie/rename', [BudgetCategoryController::class, 'renameCategoria'])->name('budget.categorie.rename');
     Route::post('/budget/categorie/destroy', [BudgetCategoryController::class, 'destroyCategoria'])->name('budget.categorie.destroy');

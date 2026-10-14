@@ -58,6 +58,27 @@ class BudgetCategoryController extends Controller
             ->with('success', 'Voce di spesa aggiornata.');
     }
 
+    /** Sposta una voce in un'altra categoria (drag & drop), in fondo alle voci di destinazione. */
+    public function moveVoce(Request $request, BudgetCategory $category)
+    {
+        $request->validate([
+            'categoria' => 'required|string|max:100',
+        ]);
+
+        $categoria = strtoupper(trim($request->categoria));
+        $anno = (int) $request->input('anno', now()->year);
+
+        if ($categoria === $category->categoria) {
+            return redirect()->route('budget.importi', ['anno' => $anno]);
+        }
+
+        $maxSort = BudgetCategory::where('categoria', $categoria)->max('sort_order') ?? 0;
+        $category->update(['categoria' => $categoria, 'sort_order' => $maxSort + 1]);
+
+        return redirect()->route('budget.importi', ['anno' => $anno])
+            ->with('success', "\"{$category->nome}\" spostata in \"{$categoria}\".");
+    }
+
     public function destroyVoce(Request $request, BudgetCategory $category)
     {
         $category->amounts()->delete();
