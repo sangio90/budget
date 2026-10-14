@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 class StatisticheController extends Controller
 {
     private const ANNO_INIZIO    = 2025;
-    private const TOP_CATEGORIE  = 5;
+    private const TOP_CATEGORIE  = 8;
     public const ALTRE           = 'Altre categorie';
 
     // Palette categoriale validata (8 colori); il gruppo "Altre categorie" è sempre grigio
@@ -34,7 +34,7 @@ class StatisticheController extends Controller
 
         $categoriaDi = fn($e) => $e->category?->categoria ?? self::ALTRE;
 
-        // Le 5 categorie con più spesa nell'anno, il resto confluisce in "Altre categorie"
+        // Le 8 categorie con più spesa nell'anno, il resto confluisce in "Altre categorie"
         $top = $spese->groupBy($categoriaDi)
             ->map(fn($rows) => $rows->sum('importo'))
             ->sortDesc()
