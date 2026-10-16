@@ -96,7 +96,6 @@ class FiscaleSeeder extends Seeder
     {
         $clienti = [
             'ID3' => null, 'Italpacking' => null, 'ILT' => null,
-            'Apir' => 'In parte estero/senza IVA: da chiarire con il commercialista',
             'BRV' => null, 'Diego' => null, 'Dibotek' => null, 'Vetraco' => null, 'Mercurio Sistemi' => null,
             'K3' => null, 'Lacchinelli' => null, 'Prada' => null,
         ];
@@ -107,6 +106,9 @@ class FiscaleSeeder extends Seeder
                 ['aliquota_iva' => 0.22, 'aliquota_ritenuta' => 0.20, 'note' => $nota]);
             $creati += $r->wasRecentlyCreated ? 1 : 0;
         }
+        $a = FiscalClient::firstOrCreate(['user_id' => $userId, 'causale' => 'Apir'],
+            ['aliquota_iva' => 0, 'aliquota_ritenuta' => 0, 'note' => 'Cliente senza IVA né ritenuta (fattore 1,00)']);
+        $creati += $a->wasRecentlyCreated ? 1 : 0;
         $r = FiscalClient::firstOrCreate(['user_id' => $userId, 'causale' => 'EAW'],
             ['aliquota_iva' => 0.22, 'aliquota_ritenuta' => 0, 'note' => 'Europe at Work: senza ritenuta (fattore 1,22)']);
 
