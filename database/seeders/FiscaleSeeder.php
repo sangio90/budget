@@ -67,7 +67,6 @@ class FiscaleSeeder extends Seeder
                 'credito_irpef_iniziale' => 28560,
                 // Credito IVA 2025 da integrativa (1.795): 1.025 usati nel Q1 2026, 770 ancora disponibili
                 'credito_iva_iniziale' => 1795,
-                'fondo_tasse_saldo' => 34761.21, 'fondo_tasse_data' => '2026-10-16',
                 'accantonamento_perc' => 0.30,
                 'note' => 'Detrazioni: 110% e risparmio energetico 2023 (ultima rata 2026), ristrutturazione/energetico/mobili 2018 (ultima rata 2027), spese sanitarie.',
             ],

@@ -193,12 +193,10 @@ class FiscaleTest extends TestCase
         $this->seedExcel();
         $f = app(Scadenziario::class)->fondoTasse($this->user->id, now());
 
-        $this->assertEqualsWithDelta(34761.21, $f['saldo'], 0.001);
         $this->assertSame('2026-11-16', $f['prossima_grossa']->toDateString());
         $this->assertEqualsWithDelta(8067.5, $f['fino_prossima_grossa'], 0.01);
         // 16/11 IVA Q3 + 30/11 (coperto da credito) + acconto IVA + saldo IVA + 30/06/2027
         $this->assertEqualsWithDelta(8067.5 + 8188.36 + 311.64 + 23069.56, $f['fino_giugno'], 0.01);
-        $this->assertEqualsWithDelta(34761.21 - $f['fino_giugno'], $f['differenza_giugno'], 0.01);
     }
 
     public function test_genera_stime_non_tocca_righe_pagate_o_manuali(): void
@@ -264,7 +262,7 @@ class FiscaleTest extends TestCase
             ->assertSee('Quanto dovresti avere da parte')
             ->assertSee('Acconto IVA 2026')
             ->assertSee('8.188,36 €', false)
-            ->assertSee('34.761,21 €', false);
+            ->assertDontSee('Fondo tasse');
 
         foreach ([2025, 2027, 2028, 2030] as $anno) {
             $this->actingAs($this->user)->get('/fiscale?anno=' . $anno)->assertOk()->assertSee("Fiscale $anno");
@@ -282,7 +280,7 @@ class FiscaleTest extends TestCase
             'aliquota_inps' => '26.07', 'massimale_inps' => '125000', 'aliquota_iva' => '22', 'aliquota_ritenuta' => '20',
             'aliquota_add_comunale' => '0.8', 'accantonamento_perc' => '33', 'detrazioni' => '95',
             'scaglioni_irpef' => '28000:23; 50000:33; *:43', 'scaglioni_add_regionale' => '',
-            'fondo_tasse_saldo' => '1000', 'fondo_tasse_data' => '2029-01-01', 'compensi_previsti' => '',
+            'compensi_previsti' => '',
         ])->assertSessionHasNoErrors()->assertRedirect(route('fiscale.index', ['anno' => 2029]));
 
         $p = FiscalYear::where('anno', 2029)->sole();

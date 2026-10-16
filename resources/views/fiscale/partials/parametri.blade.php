@@ -18,9 +18,8 @@
             ['prec_irpef_netta', 'IRPEF netta (€)', false], ['prec_ritenute', 'Ritenute (€)', false],
             ['prec_cedolare', 'Cedolare secca (€)', false], ['iva_base_acconto', 'Base acconto IVA storico (€)', false],
         ],
-        'Crediti e fondo tasse' => [
+        'Crediti' => [
             ['credito_irpef_iniziale', 'Credito IRPEF disponibile (€)', false], ['credito_iva_iniziale', 'Credito IVA disponibile (€)', false],
-            ['fondo_tasse_saldo', 'Saldo fondo tasse BBVA (€)', false],
         ],
         'Ipotesi di proiezione (vuoto = calcolate dai movimenti)' => [
             ['compensi_previsti', 'Compensi annui imponibili (€)', false], ['compensi_ra_previsti', 'di cui soggetti a ritenuta (€)', false],
@@ -53,12 +52,6 @@
                             @error($campo)<p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
                         </div>
                     @endforeach
-                    @if($titolo === 'Crediti e fondo tasse')
-                        <div>
-                            <label class="block text-xs font-medium text-slate-600 mb-1">Saldo fondo tasse al</label>
-                            <input type="date" name="fondo_tasse_data" value="{{ old('fondo_tasse_data', $parametri->fondo_tasse_data?->format('Y-m-d')) }}" class="{{ $in }}">
-                        </div>
-                    @endif
                 </div>
             </div>
         @endforeach

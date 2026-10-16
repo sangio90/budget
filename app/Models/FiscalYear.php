@@ -33,13 +33,13 @@ class FiscalYear extends Model
         'aliquota_inps', 'massimale_inps', 'aliquota_iva', 'aliquota_ritenuta', 'aliquota_add_comunale',
         'redditi_fabbricati', 'cedolare_secca', 'fondo_pensione', 'detrazioni',
         'prec_inps_dovuto', 'prec_inps_acconti', 'prec_irpef_netta', 'prec_ritenute', 'prec_cedolare', 'iva_base_acconto',
-        'credito_irpef_iniziale', 'credito_iva_iniziale', 'fondo_tasse_saldo', 'accantonamento_perc',
+        'credito_irpef_iniziale', 'credito_iva_iniziale', 'accantonamento_perc',
         'compensi_previsti', 'compensi_ra_previsti', 'costi_previsti', 'affitti_previsti', 'iva_annua_prevista',
         'spese_famiglia_previste',
     ];
 
     protected $fillable = [
-        'user_id', 'anno', 'scaglioni_irpef', 'scaglioni_add_regionale', 'fondo_tasse_data', 'note',
+        'user_id', 'anno', 'scaglioni_irpef', 'scaglioni_add_regionale', 'note',
         ...self::CAMPI_NUMERICI,
     ];
 
@@ -61,7 +61,6 @@ class FiscalYear extends Model
     protected $casts = [
         'scaglioni_irpef'         => 'array',
         'scaglioni_add_regionale' => 'array',
-        'fondo_tasse_data'        => 'date',
     ];
 
     public function user()

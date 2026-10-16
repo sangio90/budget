@@ -99,7 +99,6 @@ class Scadenziario
      * "Quanto dovresti avere da parte": da versare (righe non pagate) dalla data indicata
      *  - fino alla prossima scadenza grossa (≥ SOGLIA_SCADENZA_GROSSA)
      *  - fino al 30 giugno dell'anno successivo
-     * confrontato con il saldo del fondo tasse più recente.
      */
     public function fondoTasse(int $userId, CarbonInterface $oggi, ?Collection $righe = null): array
     {
@@ -116,22 +115,14 @@ class Scadenziario
         $sommaFino = fn(?string $data) => $data === null ? 0.0
             : round($aperte->filter(fn($r) => $r->scadenza->lte(Carbon::parse($data)->endOfDay()))->sum('da_versare_calc'), 2);
 
-        $fondo = FiscalYear::where('user_id', $userId)->whereNotNull('fondo_tasse_saldo')
-            ->orderByDesc('fondo_tasse_data')->orderByDesc('anno')->first();
-        $saldo = $fondo ? (float) $fondo->fondo_tasse_saldo : null;
-
         $fino1 = $sommaFino($prossimaGrossa);
         $fino2 = $sommaFino($giugno->toDateString());
 
         return [
-            'saldo'                 => $saldo,
-            'saldo_data'            => $fondo?->fondo_tasse_data,
             'prossima_grossa'       => $prossimaGrossa ? Carbon::parse($prossimaGrossa) : null,
             'fino_prossima_grossa'  => $fino1,
             'giugno'                => $giugno->copy()->startOfDay(),
             'fino_giugno'           => $fino2,
-            'differenza_prossima'   => $saldo === null ? null : round($saldo - $fino1, 2),
-            'differenza_giugno'     => $saldo === null ? null : round($saldo - $fino2, 2),
             'scadute_non_pagate'    => $scadute->count(),
             'anni_coperti'          => $aperte->map(fn($r) => $r->scadenza->year)->unique()->sort()->values()->all(),
         ];

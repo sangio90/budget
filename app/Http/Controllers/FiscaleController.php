@@ -73,7 +73,7 @@ class FiscaleController extends Controller
     {
         abort_unless($anno >= 2000 && $anno <= 2100, 404);
 
-        $regole = ['note' => 'nullable|string|max:2000', 'fondo_tasse_data' => 'nullable|date',
+        $regole = ['note' => 'nullable|string|max:2000',
                    'scaglioni_irpef' => 'nullable|string|max:255', 'scaglioni_add_regionale' => 'nullable|string|max:255'];
         foreach (FiscalYear::CAMPI_NUMERICI as $campo) {
             $regole[$campo] = 'nullable|numeric|between:-99999999,99999999';

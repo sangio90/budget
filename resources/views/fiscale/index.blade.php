@@ -133,7 +133,7 @@
         </p>
     </div>
 
-    {{-- Fondo tasse e accantonamento --}}
+    {{-- Da avere da parte e accantonamento --}}
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
             <div class="px-5 py-4 border-b border-slate-100">
@@ -141,25 +141,15 @@
                 <p class="text-xs text-slate-400 mt-0.5">Da versare (righe non pagate) dal {{ $oggi->format('d/m/Y') }}, al netto dei crediti</p>
             </div>
             <div class="px-5 py-4 space-y-3 text-sm">
-                <div class="flex justify-between items-baseline">
-                    <span class="text-slate-500">Fondo tasse (BBVA){{ $fondo['saldo_data'] ? ' al ' . $fondo['saldo_data']->format('d/m/Y') : '' }}</span>
-                    <span class="text-lg font-bold whitespace-nowrap text-slate-800">{{ $eu($fondo['saldo'], 2) }}</span>
-                </div>
                 @foreach([
-                    ['Fino alla prossima scadenza grossa' . ($fondo['prossima_grossa'] ? ' (' . $fondo['prossima_grossa']->format('d/m/Y') . ')' : ''), $fondo['fino_prossima_grossa'], $fondo['differenza_prossima']],
-                    ['Fino al ' . $fondo['giugno']->format('d/m/Y'), $fondo['fino_giugno'], $fondo['differenza_giugno']],
-                ] as [$etichetta, $serve, $diff])
-                    <div class="border-t border-slate-100 pt-3">
+                    ['Fino alla prossima scadenza grossa' . ($fondo['prossima_grossa'] ? ' (' . $fondo['prossima_grossa']->format('d/m/Y') . ')' : ''), $fondo['fino_prossima_grossa']],
+                    ['Fino al ' . $fondo['giugno']->format('d/m/Y'), $fondo['fino_giugno']],
+                ] as $i => [$etichetta, $serve])
+                    <div class="{{ $i ? 'border-t border-slate-100 pt-3' : '' }}">
                         <div class="flex justify-between items-baseline">
                             <span class="text-slate-600 font-medium">{{ $etichetta }}</span>
-                            <span class="font-semibold whitespace-nowrap text-red-500">{{ $eu($serve, 2) }}</span>
+                            <span class="text-lg font-bold whitespace-nowrap text-slate-800">{{ $eu($serve, 2) }}</span>
                         </div>
-                        @if($diff !== null)
-                            <div class="flex justify-between items-baseline text-xs mt-1">
-                                <span class="text-slate-400">{{ $diff >= 0 ? 'Margine' : 'Mancano' }}</span>
-                                <span class="font-semibold whitespace-nowrap {{ $diff >= 0 ? 'text-emerald-600' : 'text-red-600' }}">{{ $eu(abs($diff), 2) }}</span>
-                            </div>
-                        @endif
                     </div>
                 @endforeach
                 @if($fondo['scadute_non_pagate'])
