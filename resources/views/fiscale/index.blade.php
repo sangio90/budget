@@ -76,6 +76,57 @@
                 <div class="text-xs text-primary-400 mt-1">{{ $eu($risultato['netto']) }} anno · affitti inclusi</div>
             </div>
         </div>
+
+        {{-- Dettaglio IRPEF per scaglione --}}
+        <details class="mt-3 bg-white rounded-2xl shadow-sm border border-slate-100" open>
+            <summary class="cursor-pointer select-none px-5 py-3 text-sm font-semibold text-slate-700">Calcolo IRPEF per scaglione</summary>
+            <div class="px-5 pb-4 overflow-x-auto">
+                <table class="w-full text-sm">
+                    <tbody class="text-slate-600">
+                        <tr><td class="py-1">Reddito professionale</td><td class="py-1 text-right whitespace-nowrap">{{ $eu($risultato['reddito']) }}</td></tr>
+                        <tr><td class="py-1">+ redditi fabbricati</td><td class="py-1 text-right whitespace-nowrap">{{ $eu($risultato['redditi_fabbricati']) }}</td></tr>
+                        <tr><td class="py-1">− INPS versato nell'anno (deducibile)</td><td class="py-1 text-right whitespace-nowrap">−{{ $eu($risultato['inps_deducibile']) }}</td></tr>
+                        <tr><td class="py-1">− fondo pensione</td><td class="py-1 text-right whitespace-nowrap">−{{ $eu($risultato['fondo_pensione']) }}</td></tr>
+                        <tr class="border-t border-slate-100 font-semibold text-slate-800"><td class="py-1">Imponibile IRPEF</td><td class="py-1 text-right whitespace-nowrap">{{ $eu($risultato['imponibile_irpef']) }}</td></tr>
+                    </tbody>
+                </table>
+                <table class="w-full text-sm mt-3">
+                    <thead>
+                        <tr class="text-xs text-slate-400 uppercase tracking-wide">
+                            <th class="text-left font-medium py-1">Scaglione</th>
+                            <th class="text-right font-medium py-1">Aliquota</th>
+                            <th class="text-right font-medium py-1">Reddito nello scaglione</th>
+                            <th class="text-right font-medium py-1">Imposta</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-slate-600">
+                        @foreach($risultato['irpef_scaglioni'] as $sc)
+                        <tr class="border-t border-slate-50 {{ $sc['base'] > 0 ? '' : 'text-slate-300' }}">
+                            <td class="py-1 whitespace-nowrap">{{ $sc['fino'] === null ? 'oltre ' . $eu($sc['da']) : $eu($sc['da']) . ' – ' . $eu($sc['fino']) }}</td>
+                            <td class="py-1 text-right">{{ $pc($sc['aliquota'], 0) }}</td>
+                            <td class="py-1 text-right whitespace-nowrap">{{ $eu($sc['base']) }}</td>
+                            <td class="py-1 text-right whitespace-nowrap">{{ $eu($sc['imposta']) }}</td>
+                        </tr>
+                        @endforeach
+                        <tr class="border-t border-slate-200 font-semibold text-slate-800">
+                            <td class="py-1" colspan="3">IRPEF lorda</td>
+                            <td class="py-1 text-right whitespace-nowrap">{{ $eu($risultato['irpef_lorda']) }}</td>
+                        </tr>
+                        <tr><td class="py-1" colspan="3">− detrazioni</td><td class="py-1 text-right whitespace-nowrap text-emerald-600">−{{ $eu($risultato['detrazioni']) }}</td></tr>
+                        <tr class="font-semibold text-slate-800"><td class="py-1" colspan="3">IRPEF netta</td><td class="py-1 text-right whitespace-nowrap">{{ $eu($risultato['irpef_netta']) }}</td></tr>
+                        <tr><td class="py-1" colspan="3">− ritenute subite</td><td class="py-1 text-right whitespace-nowrap text-emerald-600">−{{ $eu($risultato['ritenute']) }}</td></tr>
+                        <tr class="border-t border-slate-200 font-semibold {{ $risultato['irpef_saldo'] > 0 ? 'text-red-600' : 'text-emerald-600' }}">
+                            <td class="py-1" colspan="3">IRPEF {{ $risultato['irpef_saldo'] > 0 ? 'a debito' : 'a credito' }}</td>
+                            <td class="py-1 text-right whitespace-nowrap">{{ $eu(abs($risultato['irpef_saldo'])) }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+                @php $marg = collect($risultato['irpef_scaglioni'])->filter(fn ($sc) => $sc['base'] > 0)->last(); @endphp
+                @if($marg)
+                <p class="text-xs text-slate-400 mt-2">Aliquota marginale {{ $pc($marg['aliquota'], 0) }}: ogni 100 € di costi deducibili in più fanno risparmiare circa {{ $eu(100 * $marg['aliquota']) }} di IRPEF (più le addizionali).</p>
+                @endif
+            </div>
+        </details>
         <p class="text-xs text-slate-400 mt-2">
             Ipotesi: compensi {{ $fonte['compensi'] ?? '' }}, costi {{ $fonte['costi'] ?? '' }}, affitti {{ $fonte['affitti'] ?? '' }}, IVA {{ $fonte['iva_annua'] ?? '' }}.
             Si possono fissare a mano nei parametri dell'anno.

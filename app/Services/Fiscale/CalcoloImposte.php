@@ -36,6 +36,34 @@ class CalcoloImposte
         return $imposta;
     }
 
+    /**
+     * Dettaglio per scaglione: per ogni fascia [da, fino, aliquota, base tassata nella fascia, imposta].
+     * La somma delle imposte coincide con aScaglioni().
+     */
+    public static function dettaglioScaglioni(float $base, array $scaglioni): array
+    {
+        $righe = [];
+        $da    = 0.0;
+        foreach ($scaglioni as $s) {
+            $fino     = $s['fino'] === null || $s['fino'] === '' ? null : (float) $s['fino'];
+            $limite   = $fino ?? INF;
+            $tassata  = max(0.0, min($base, $limite) - $da);
+            $righe[]  = [
+                'da'       => $da,
+                'fino'     => $fino,
+                'aliquota' => (float) $s['aliquota'],
+                'base'     => $tassata,
+                'imposta'  => $tassata * (float) $s['aliquota'],
+            ];
+            $da = $limite;
+            if ($da === INF) {
+                break;
+            }
+        }
+
+        return $righe;
+    }
+
     public function calcola(array $i, FiscalYear $p): array
     {
         $compensi   = (float) ($i['compensi'] ?? 0);
@@ -74,6 +102,9 @@ class CalcoloImposte
             'inps_deducibile'        => $inpsDed,
             'imponibile_irpef'       => $imponibile,
             'irpef_lorda'            => $irpefLorda,
+            'irpef_scaglioni'        => self::dettaglioScaglioni($imponibile, $p->scaglioniIrpef()),
+            'redditi_fabbricati'     => (float) $p->redditi_fabbricati,
+            'fondo_pensione'         => (float) $p->fondo_pensione,
             'detrazioni'             => $detrazioni,
             'irpef_netta'            => $irpefNetta,
             'ritenute'               => $ritenute,

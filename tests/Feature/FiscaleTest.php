@@ -79,6 +79,31 @@ class FiscaleTest extends TestCase
         $this->assertEquals(0, CalcoloImposte::aScaglioni(0, FiscalYear::SCAGLIONI_IRPEF));
     }
 
+    public function test_dettaglio_irpef_per_scaglione(): void
+    {
+        $scaglioni = FiscalYear::SCAGLIONI_IRPEF;
+        $righe = CalcoloImposte::dettaglioScaglioni(151835.4, $scaglioni);
+
+        $this->assertCount(3, $righe);
+        $this->assertEqualsWithDelta(28000, $righe[0]['base'], 0.01);
+        $this->assertEqualsWithDelta(6440, $righe[0]['imposta'], 0.01);
+        $this->assertEqualsWithDelta(22000, $righe[1]['base'], 0.01);
+        $this->assertEqualsWithDelta(7260, $righe[1]['imposta'], 0.01);
+        $this->assertNull($righe[2]['fino']);
+        $this->assertEqualsWithDelta(101835.4, $righe[2]['base'], 0.01);
+        $this->assertEqualsWithDelta(
+            CalcoloImposte::aScaglioni(151835.4, $scaglioni),
+            array_sum(array_column($righe, 'imposta')),
+            0.001
+        );
+
+        // reddito sotto il primo scaglione: le fasce successive restano a zero
+        $basso = CalcoloImposte::dettaglioScaglioni(20000, $scaglioni);
+        $this->assertEqualsWithDelta(20000, $basso[0]['base'], 0.01);
+        $this->assertEquals(0, $basso[1]['base']);
+        $this->assertEquals(0, $basso[2]['base']);
+    }
+
     public function test_proiezione_triennio_coincide_con_excel(): void
     {
         $this->seedExcel();
