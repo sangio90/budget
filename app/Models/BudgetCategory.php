@@ -6,7 +6,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class BudgetCategory extends Model
 {
-    protected $fillable = ['categoria', 'nome', 'importo_annuale', 'importo_mensile', 'periodo', 'note', 'sort_order'];
+    protected $fillable = ['categoria', 'nome', 'aziendale', 'importo_annuale', 'importo_mensile', 'periodo', 'note', 'sort_order'];
+
+    protected $casts = ['aziendale' => 'boolean'];
 
     public function expenses()
     {

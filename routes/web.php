@@ -7,6 +7,7 @@ use App\Http\Controllers\BudgetAmountController;
 use App\Http\Controllers\BudgetCategoryController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\ExtraIncomeController;
+use App\Http\Controllers\FiscaleController;
 use App\Http\Controllers\StatisticheController;
 use Illuminate\Support\Facades\Route;
 
@@ -46,6 +47,17 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/entrate-extra/{extraIncome}/edit', [ExtraIncomeController::class, 'edit'])->name('extra-incomes.edit');
     Route::put('/entrate-extra/{extraIncome}', [ExtraIncomeController::class, 'update'])->name('extra-incomes.update');
     Route::delete('/entrate-extra/{extraIncome}', [ExtraIncomeController::class, 'destroy'])->name('extra-incomes.destroy');
+
+    Route::get('/fiscale', [FiscaleController::class, 'index'])->name('fiscale.index');
+    Route::put('/fiscale/parametri/{anno}', [FiscaleController::class, 'updateParametri'])->whereNumber('anno')->name('fiscale.parametri.update');
+    Route::post('/fiscale/clienti', [FiscaleController::class, 'storeCliente'])->name('fiscale.clienti.store');
+    Route::delete('/fiscale/clienti/{client}', [FiscaleController::class, 'destroyCliente'])->name('fiscale.clienti.destroy');
+    Route::put('/fiscale/categorie', [FiscaleController::class, 'updateCategorie'])->name('fiscale.categorie.update');
+    Route::post('/fiscale/scadenze', [FiscaleController::class, 'storeScadenza'])->name('fiscale.scadenze.store');
+    Route::post('/fiscale/scadenze/genera', [FiscaleController::class, 'generaStime'])->name('fiscale.scadenze.genera');
+    Route::get('/fiscale/scadenze/{deadline}/edit', [FiscaleController::class, 'editScadenza'])->name('fiscale.scadenze.edit');
+    Route::put('/fiscale/scadenze/{deadline}', [FiscaleController::class, 'updateScadenza'])->name('fiscale.scadenze.update');
+    Route::delete('/fiscale/scadenze/{deadline}', [FiscaleController::class, 'destroyScadenza'])->name('fiscale.scadenze.destroy');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
