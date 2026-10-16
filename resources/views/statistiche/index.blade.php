@@ -278,5 +278,33 @@
     </script>
     @endif
 
+    {{-- Entrate extra (affitti, fotovoltaico, cedole, interessi...) --}}
+    <div class="flex items-end justify-between flex-wrap gap-3 pt-4">
+        <div>
+            <h2 class="text-xl font-bold text-slate-900">Entrate extra {{ $anno }}</h2>
+            <p class="text-sm text-slate-500 mt-0.5">Affitti, fotovoltaico, cedole, interessi e rimborsi spese immobili</p>
+        </div>
+        <a href="{{ route('extra-incomes.index', ['anno' => $anno]) }}" class="text-sm font-medium text-primary-600 hover:text-primary-700">Vai alle entrate extra →</a>
+    </div>
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-100 px-5 py-4">
+            <div class="text-xs text-slate-400 mb-0.5">Totale anno</div>
+            <div class="text-lg font-bold text-emerald-600">{{ number_format($entrateExtra['totale'], 0, ',', '.') }} €</div>
+        </div>
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-100 px-5 py-4">
+            <div class="text-xs text-slate-400 mb-0.5">Media mensile</div>
+            <div class="text-lg font-bold text-slate-800">{{ number_format($entrateExtra['media'], 0, ',', '.') }} €</div>
+        </div>
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-100 px-5 py-4">
+            <div class="text-xs text-slate-400 mb-0.5">Spese nette (spese − extra)</div>
+            <div class="text-lg font-bold text-slate-800">{{ number_format($totale - $entrateExtra['totale'], 0, ',', '.') }} €</div>
+        </div>
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-100 px-5 py-4">
+            <div class="text-xs text-slate-400 mb-0.5">Spese coperte da extra</div>
+            <div class="text-lg font-bold text-slate-800">{{ $totale > 0 ? round($entrateExtra['totale'] / $totale * 100) . '%' : '—' }}</div>
+        </div>
+    </div>
+    @include('extra-incomes.partials.riepilogo', ['riepilogo' => $entrateExtra, 'anno' => $anno])
+
 </div>
 </x-app-layout>

@@ -14,6 +14,19 @@
         </span>
     </div>
 
+    {{-- Entrate extra (affitti, cedole, interessi...) --}}
+    <a href="{{ route('extra-incomes.index', ['anno' => $anno]) }}"
+       class="flex items-center justify-between gap-3 bg-white rounded-2xl shadow-sm border border-slate-100 px-5 py-3 hover:shadow-md hover:border-slate-200 transition-all">
+        <div>
+            <div class="text-xs font-medium text-slate-500 uppercase tracking-wide">Entrate extra {{ $anno }}</div>
+            <div class="text-lg font-bold text-emerald-600 whitespace-nowrap">{{ number_format($entrateExtra['anno'], 0, ',', '.') }} €</div>
+        </div>
+        <div class="text-right">
+            <div class="text-xs text-slate-400">questo mese</div>
+            <div class="text-sm font-semibold text-slate-700 whitespace-nowrap">{{ number_format($entrateExtra['mese'], 0, ',', '.') }} €</div>
+        </div>
+    </a>
+
     {{-- ============================================================
          MOBILE: swipe orizzontale tra le 3 sezioni
          ============================================================ --}}
@@ -123,19 +136,21 @@
                     <div class="bg-white rounded-2xl shadow-sm border border-slate-100 divide-y divide-slate-50">
                         @foreach($ultimiMovimenti as $mov)
                             @php
-                                $isEntrata = $mov['tipo'] === 'entrata';
+                                $isEntrata = $mov['tipo'] === 'entrata' || ($mov['tipo'] === 'extra' && $mov['importo'] >= 0);
                                 $segno     = $isEntrata ? '+' : '−';
                                 $coloreImp = $isEntrata ? 'text-emerald-600' : 'text-red-500';
                                 $badgeClass = match($mov['tipo']) {
                                     'entrata' => 'bg-emerald-100 text-emerald-700',
                                     'uscita'  => 'bg-red-100 text-red-600',
                                     'f24'     => 'bg-purple-100 text-purple-700',
+                                    'extra'   => 'bg-emerald-50 text-emerald-600',
                                     default   => 'bg-slate-100 text-slate-600',
                                 };
                                 $badgeLabel = match($mov['tipo']) {
                                     'entrata' => 'Entrata',
                                     'uscita'  => 'Uscita',
                                     'f24'     => 'F24',
+                                    'extra'   => 'Extra',
                                     default   => 'Spesa',
                                 };
                             @endphp
@@ -150,7 +165,7 @@
                                     @endif
                                 </div>
                                 <div class="text-right flex-shrink-0">
-                                    <span class="text-sm font-bold {{ $coloreImp }}">{{ $segno }} {{ number_format($mov['importo'], 0, ',', '.') }} €</span>
+                                    <span class="text-sm font-bold {{ $coloreImp }}">{{ $segno }} {{ number_format(abs($mov['importo']), 0, ',', '.') }} €</span>
                                     <p class="text-xs text-slate-400">{{ $mov['data']->translatedFormat('d M') }}</p>
                                 </div>
                             </div>
@@ -236,19 +251,21 @@
             <div class="bg-white rounded-2xl shadow-sm border border-slate-100 divide-y divide-slate-50">
                 @foreach($ultimiMovimenti as $mov)
                     @php
-                        $isEntrata = $mov['tipo'] === 'entrata';
+                        $isEntrata = $mov['tipo'] === 'entrata' || ($mov['tipo'] === 'extra' && $mov['importo'] >= 0);
                         $segno     = $isEntrata ? '+' : '−';
                         $coloreImp = $isEntrata ? 'text-emerald-600' : 'text-red-500';
                         $badgeClass = match($mov['tipo']) {
                             'entrata' => 'bg-emerald-100 text-emerald-700',
                             'uscita'  => 'bg-red-100 text-red-600',
                             'f24'     => 'bg-purple-100 text-purple-700',
+                            'extra'   => 'bg-emerald-50 text-emerald-600',
                             default   => 'bg-slate-100 text-slate-600',
                         };
                         $badgeLabel = match($mov['tipo']) {
                             'entrata' => 'Entrata',
                             'uscita'  => 'Uscita',
                             'f24'     => 'F24',
+                            'extra'   => 'Extra',
                             default   => 'Spesa',
                         };
                     @endphp
@@ -263,7 +280,7 @@
                             @endif
                         </div>
                         <div class="text-right flex-shrink-0">
-                            <span class="text-sm font-bold {{ $coloreImp }}">{{ $segno }} {{ number_format($mov['importo'], 0, ',', '.') }} €</span>
+                            <span class="text-sm font-bold {{ $coloreImp }}">{{ $segno }} {{ number_format(abs($mov['importo']), 0, ',', '.') }} €</span>
                             <p class="text-xs text-slate-400">{{ $mov['data']->translatedFormat('d M') }}</p>
                         </div>
                     </div>

@@ -6,6 +6,7 @@ use App\Http\Controllers\BudgetController;
 use App\Http\Controllers\BudgetAmountController;
 use App\Http\Controllers\BudgetCategoryController;
 use App\Http\Controllers\TransactionController;
+use App\Http\Controllers\ExtraIncomeController;
 use App\Http\Controllers\StatisticheController;
 use Illuminate\Support\Facades\Route;
 
@@ -39,6 +40,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/transazioni', [TransactionController::class, 'store'])->name('transactions.store');
     Route::delete('/transazioni/{transaction}', [TransactionController::class, 'destroy'])->name('transactions.destroy');
     Route::get('/transazioni/causali', [TransactionController::class, 'causaliJson'])->name('transactions.causali');
+
+    Route::get('/entrate-extra', [ExtraIncomeController::class, 'index'])->name('extra-incomes.index');
+    Route::post('/entrate-extra', [ExtraIncomeController::class, 'store'])->name('extra-incomes.store');
+    Route::get('/entrate-extra/{extraIncome}/edit', [ExtraIncomeController::class, 'edit'])->name('extra-incomes.edit');
+    Route::put('/entrate-extra/{extraIncome}', [ExtraIncomeController::class, 'update'])->name('extra-incomes.update');
+    Route::delete('/entrate-extra/{extraIncome}', [ExtraIncomeController::class, 'destroy'])->name('extra-incomes.destroy');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');

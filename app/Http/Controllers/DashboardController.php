@@ -74,11 +74,32 @@ class DashboardController extends Controller
                 'created_at'  => $t->created_at,
             ]);
 
-        $ultimiMovimenti = $ultimeSpese->concat($ultimeTransazioni)
+        $ultimeEntrateExtra = \App\Models\ExtraIncome::where('user_id', auth()->id())
+            ->orderByDesc('created_at')
+            ->limit(10)
+            ->get()
+            ->map(fn($e) => [
+                'tipo'        => 'extra',
+                'data'        => $e->data,
+                'descrizione' => $e->causale,
+                'importo'     => $e->importo,
+                'note'        => $e->note,
+                'created_at'  => $e->created_at,
+            ]);
+
+        // Entrate extra (affitti, cedole, interessi...): totali dell'anno e del mese corrente
+        $entrateExtra = [
+            'anno' => (float) \App\Models\ExtraIncome::where('user_id', auth()->id())
+                ->whereYear('data', $anno)->sum('importo'),
+            'mese' => (float) \App\Models\ExtraIncome::where('user_id', auth()->id())
+                ->whereYear('data', $anno)->whereMonth('data', $mese)->sum('importo'),
+        ];
+
+        $ultimiMovimenti = $ultimeSpese->concat($ultimeTransazioni)->concat($ultimeEntrateExtra)
             ->sortByDesc(fn($m) => $m['created_at']->timestamp)
             ->take(10)
             ->values();
 
-        return view('dashboard', compact('righe', 'anno', 'mese', 'ultimeSpese', 'ultimiMovimenti'));
+        return view('dashboard', compact('righe', 'anno', 'mese', 'ultimeSpese', 'ultimiMovimenti', 'entrateExtra'));
     }
 }

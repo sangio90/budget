@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\BudgetCategory;
 use App\Models\BudgetExpense;
+use App\Models\ExtraIncome;
 use Illuminate\Http\Request;
 
 class StatisticheController extends Controller
@@ -94,6 +95,7 @@ class StatisticheController extends Controller
             'totale'        => $totale,
             'media'         => $media,
             'meseMax'       => $meseMax,
+            'entrateExtra'  => ExtraIncome::riepilogoAnno(auth()->id(), $anno),
         ]);
     }
 
