@@ -17,6 +17,7 @@ use Carbon\CarbonInterface;
  *  - IRPEF: saldo Y-1 (negativo = credito), acconti Y 50% + 50% se dovuti
  *  - Addizionale regionale: saldo Y-1; comunale: saldo Y-1 + acconto Y (30%)
  *  - Cedolare secca: saldo Y-1, acconti Y 50% + 50%
+ *  - IMU: acconto (16/06) e saldo (16/12) uguali a quelli dell'anno prima (si correggono a mano se cambiano)
  * Le scadenze che cadono di sabato o domenica slittano al lunedì.
  */
 class GeneratoreScadenze
@@ -26,6 +27,7 @@ class GeneratoreScadenze
         'irpef:saldo' => 20, 'irpef:acconto1' => 21, 'irpef:acconto2' => 22,
         'addreg:saldo' => 30, 'addcom:saldo' => 40, 'addcom:acconto' => 41,
         'ced:saldo' => 50, 'ced:acconto1' => 51, 'ced:acconto2' => 52,
+        'imu:acconto' => 60, 'imu:saldo' => 61,
     ];
 
     /** Sotto questa soglia gli acconti IRPEF non sono dovuti. */
@@ -124,6 +126,15 @@ class GeneratoreScadenze
         foreach ([1 => [6, 30], 2 => [11, 30]] as $n => [$m, $g]) {
             $riga("ced:acconto$n:$anno", 'Cedolare secca', "Cedolare secca – {$n}° acconto $anno", $anno, $data($m, $g),
                 round($cedPrec / 2, 0), '50% × cedolare ' . $prec);
+        }
+
+        // --- IMU ------------------------------------------------------------------
+        foreach (['acconto' => [6, 16, 'Acconto'], 'saldo' => [12, 16, 'Saldo']] as $tipo => [$m, $g, $nome]) {
+            $prima = $this->importoRiga($userId, "imu:$tipo:$prec");
+            if ($prima !== null && $prima > 0) {
+                $riga("imu:$tipo:$anno", 'IMU', "IMU – $nome $anno", $anno, $data($m, $g), $prima,
+                    "Come $nome $prec: correggi se cambiano aliquote o immobili");
+            }
         }
 
         return $righe;

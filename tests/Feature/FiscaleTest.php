@@ -198,8 +198,24 @@ class FiscaleTest extends TestCase
 
         $this->assertSame('2026-11-16', $f['prossima_grossa']->toDateString());
         $this->assertEqualsWithDelta(8067.5, $f['fino_prossima_grossa'], 0.01);
-        // 16/11 IVA Q3 + 30/11 (coperto da credito) + acconto IVA + saldo IVA + 30/06/2027
-        $this->assertEqualsWithDelta(8067.5 + 8188.36 + 311.64 + 23069.56, $f['fino_giugno'], 0.01);
+        // 16/11 IVA Q3 + 30/11 (coperto da credito) + saldo IMU 16/12 + acconto IVA + saldo IVA + acconto IMU 16/06 + 30/06/2027
+        $this->assertEqualsWithDelta(8067.5 + 700 + 8188.36 + 311.64 + 700 + 23069.56, $f['fino_giugno'], 0.01);
+    }
+
+    public function test_imu_nello_scadenziario_e_nelle_stime(): void
+    {
+        $this->seedExcel();
+        $righe = app(Scadenziario::class)->righe($this->user->id)->keyBy('chiave');
+
+        // pagata in contanti con F24: non usa il credito IRPEF
+        $this->assertEqualsWithDelta(0, $righe['imu:acconto:2026']->compensato_calc, 0.01);
+        $this->assertEqualsWithDelta(700, $righe['imu:saldo:2026']->da_versare_calc, 0.01);
+
+        app(GeneratoreScadenze::class)->genera($this->user->id, 2028);
+        $imu = FiscalDeadline::where('tributo', 'IMU')->where('anno_competenza', 2028)->get()->keyBy('chiave');
+        $this->assertEqualsWithDelta(700, (float) $imu['imu:acconto:2028']->importo_previsto, 0.01);
+        $this->assertSame('2028-06-16', $imu['imu:acconto:2028']->scadenza->toDateString());
+        $this->assertSame('2028-12-18', $imu['imu:saldo:2028']->scadenza->toDateString()); // 16/12/2028 è sabato
     }
 
     public function test_genera_stime_non_tocca_righe_pagate_o_manuali(): void

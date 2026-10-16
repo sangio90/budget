@@ -163,6 +163,12 @@ class FiscaleSeeder extends Seeder
             ['ced:acconto1:2027', '2027-06-30', 'Cedolare secca', 'Cedolare secca – 1° acconto 2027', 2027, 1310, null, null, null, 'stimato', 'Come 2026'],
             ['inps:acconto2:2027', '2027-11-30', 'INPS', 'INPS – 2° acconto 2027', 2027, 12722.16, null, null, null, 'stimato', '40% × 31.805'],
             ['ced:acconto2:2027', '2027-11-30', 'Cedolare secca', 'Cedolare secca – 2° acconto 2027', 2027, 1310, null, null, null, 'stimato', 'Come 2026'],
+            // --- IMU (non compensabile con il credito IRPEF) ---------------------------------
+            ['imu:acconto:2026', '2026-06-16', 'IMU', 'IMU – Acconto 2026', 2026, 700, 0, 700, '2026-06-16', 'pagato', 'F24 del 16/06/2026 da ING'],
+            ['imu:saldo:2026', '2026-12-16', 'IMU', 'IMU – Saldo 2026', 2026, 700, null, null, null, 'stimato',
+                'Stima uguale all\'acconto (nel budget fambudget l\'IMU annua è 1.940: verificare l\'importo)'],
+            ['imu:acconto:2027', '2027-06-16', 'IMU', 'IMU – Acconto 2027', 2027, 700, null, null, null, 'stimato', 'Come 2026'],
+            ['imu:saldo:2027', '2027-12-16', 'IMU', 'IMU – Saldo 2027', 2027, 700, null, null, null, 'stimato', 'Come 2026'],
         ];
 
         $creati = 0;
