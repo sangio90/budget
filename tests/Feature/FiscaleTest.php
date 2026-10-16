@@ -157,10 +157,13 @@ class FiscaleTest extends TestCase
         $this->assertEqualsWithDelta(2200, $c['iva_trimestri'][1], 0.01);
         $this->assertEqualsWithDelta(220, $c['iva_trimestri'][3], 0.01);
 
-        // Al 16/10 sono passati ~9,5 mesi: le ipotesi annue sono annualizzate
+        // Al 16/10 sono passati ~9,5 mesi: valore a oggi + media degli ultimi 3 mesi (16/07–16/10) × 2,5 mesi che mancano
         $this->assertEqualsWithDelta(9.5, $ip['mesi'], 0.01);
-        $this->assertEquals(round(11000 * 12 / $ip['mesi']), $ip['valori']['compensi']);
-        $this->assertSame('annualizzato', $ip['fonte']['compensi']);
+        $mesiRecenti = $ip['mesi'] - round(\Carbon\Carbon::parse('2026-07-15')->dayOfYear / 365 * 12, 2);
+        $this->assertEquals(round(11000 + 1000 / $mesiRecenti * (12 - $ip['mesi'])), $ip['valori']['compensi']);
+        // nessun costo negli ultimi 3 mesi: i costi restano quelli a oggi
+        $this->assertEquals(3400, $ip['valori']['costi']);
+        $this->assertSame('a oggi + ritmo ultimi 3 mesi', $ip['fonte']['compensi']);
 
         // L'anno dopo eredita le ipotesi dell'anno in corso
         $this->assertEquals($ip['valori']['compensi'], $proiezione->ipotesi($this->user->id, 2027)['valori']['compensi']);

@@ -59,7 +59,7 @@
     <div>
         <h2 class="text-sm font-semibold text-slate-500 uppercase tracking-wide mb-3">
             Imposte e netto {{ $anno }}
-            @if($inCorso)<span class="ml-1 normal-case font-normal text-xs px-2 py-0.5 rounded-full bg-amber-100 text-amber-700">stima annualizzata × 12 / {{ number_format($mesi, 1, ',', '.') }}</span>@endif
+            @if($inCorso)<span class="ml-1 normal-case font-normal text-xs px-2 py-0.5 rounded-full bg-amber-100 text-amber-700">stima: a oggi + ritmo degli ultimi 3 mesi × {{ number_format(12 - $mesi, 1, ',', '.') }} mesi</span>@endif
             @if($futuro)<span class="ml-1 normal-case font-normal text-xs px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">proiezione</span>@endif
         </h2>
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">

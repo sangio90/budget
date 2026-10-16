@@ -10,7 +10,7 @@ use Carbon\CarbonInterface;
 /**
  * Proiezione annua di imposte e netto (foglio "Proiezione 2026-2028").
  *  - anni passati:  consuntivo dell'intero anno
- *  - anno in corso: consuntivo a oggi × 12 / mesi trascorsi (annualizzato)
+ *  - anno in corso: consuntivo a oggi + media degli ultimi 3 mesi × mesi che mancano
  *  - anni futuri:   stesse ipotesi dell'anno in corso
  * Ogni ipotesi può essere fissata a mano nei parametri dell'anno (campi *_previsti).
  * L'INPS deducibile è quello versato per cassa nell'anno: saldo dell'anno prima + acconti (80%).
@@ -50,9 +50,15 @@ class ProiezioneFiscale
         return round($this->oggi->dayOfYear / $this->oggi->daysInYear * 12, 2);
     }
 
+    /** Mesi trascorsi dall'inizio dell'anno fino alla data indicata (frazionari). */
+    private function mesiTrascorsiAl(CarbonInterface $data): float
+    {
+        return round($data->dayOfYear / $data->daysInYear * 12, 2);
+    }
+
     /**
      * Ipotesi annue di un anno, con l'indicazione della fonte di ogni valore
-     * (consuntivo, annualizzato, come anno in corso, impostato a mano).
+     * (consuntivo, a oggi + ritmo ultimi 3 mesi, come anno in corso, impostato a mano).
      */
     public function ipotesi(int $userId, int $anno): array
     {
@@ -71,17 +77,29 @@ class ProiezioneFiscale
             $inCorso    = $anno === $annoOggi;
             $consuntivo = $this->dati->consuntivo($userId, $anno, $inCorso ? $this->oggi : null);
             $mesi       = $this->mesiTrascorsi($anno);
-            $k          = $inCorso && $mesi > 0 ? 12 / $mesi : 1;
-            $etichetta  = $inCorso ? 'annualizzato' : 'consuntivo';
+            $etichetta  = $inCorso ? 'a oggi + ritmo ultimi 3 mesi' : 'consuntivo';
 
-            $base = [
-                'compensi'       => round($consuntivo['imponibile'] * $k, 0),
-                'compensi_ra'    => round($consuntivo['compensi_ra'] * $k, 0),
-                'costi'          => round($consuntivo['costi'] * $k, 0),
-                'affitti'        => round($consuntivo['affitti'] * $k, 0),
-                'iva_incassata'  => round($consuntivo['iva_incassata'] * $k, 0),
-                'spese_famiglia' => round($consuntivo['spese_famiglia'] * $k, 0),
-            ];
+            // Anno in corso: valore a oggi + media degli ultimi 3 mesi × mesi che mancano.
+            // Segue i cambi di ritmo (un collaboratore che smette, un cliente nuovo) meglio della media dell'anno.
+            $chiavi = ['compensi' => 'imponibile', 'compensi_ra' => 'compensi_ra', 'costi' => 'costi',
+                       'affitti' => 'affitti', 'iva_incassata' => 'iva_incassata', 'spese_famiglia' => 'spese_famiglia'];
+            $mancano = $inCorso ? max(0, 12 - $mesi) : 0;
+            $recente = null;
+            $mesiRecenti = 0.0;
+            if ($inCorso && $mancano > 0) {
+                $inizio = $this->oggi->copy()->subMonthsNoOverflow(3);
+                if ($inizio->year < $anno) {
+                    $inizio = Carbon::create($anno, 1, 1);
+                }
+                $prima       = $this->dati->consuntivo($userId, $anno, $inizio->copy()->subDay());
+                $mesiRecenti = max(0.01, $mesi - $this->mesiTrascorsiAl($inizio->copy()->subDay()));
+                $recente     = array_map(fn($c) => ($consuntivo[$c] ?? 0) - ($prima[$c] ?? 0), $chiavi);
+            }
+            $base = [];
+            foreach ($chiavi as $chiave => $campo) {
+                $aOggi = (float) ($consuntivo[$campo] ?? 0);
+                $base[$chiave] = round($recente === null ? $aOggi : $aOggi + $recente[$chiave] / $mesiRecenti * $mancano, 0);
+            }
             $fonte = array_fill_keys(array_keys($base), $etichetta);
 
             // IVA dell'anno: dalle scadenze IVA di competenza (versate + stimate), altrimenti IVA incassata
