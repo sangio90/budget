@@ -15,6 +15,7 @@ use App\Models\FiscalYear;
  *  - affitti         affitti incassati (cassa), solo per il netto
  *  - inps_deducibile INPS versato nell'anno (deducibile per cassa)
  *  - iva_annua       IVA da versare nell'anno (solo per l'accantonamento)
+ *  - imu             IMU dell'anno (solo per l'accantonamento)
  *  - spese_famiglia  spese personali annue (solo per il risparmio)
  */
 class CalcoloImposte
@@ -73,6 +74,7 @@ class CalcoloImposte
         $inpsDed    = (float) ($i['inps_deducibile'] ?? 0);
         $ivaAnnua   = (float) ($i['iva_annua'] ?? 0);
         $speseFam   = (float) ($i['spese_famiglia'] ?? 0);
+        $imu        = (float) ($i['imu'] ?? 0);
 
         $reddito    = $compensi - $costi;
         $inps       = round((float) $p->aliquota_inps * min(max(0, $reddito), (float) $p->massimale_inps), 0);
@@ -88,7 +90,7 @@ class CalcoloImposte
 
         $totale  = $inps + $irpefNetta + $addReg + $addCom + $cedolare;
         $netto   = $reddito + $affitti - $totale;
-        $accanto = $ivaAnnua + $inps + max(0, $irpefSaldo) + $addReg + $addCom + $cedolare;
+        $accanto = $ivaAnnua + $inps + max(0, $irpefSaldo) + $addReg + $addCom + $cedolare + $imu;
 
         return [
             'compensi'               => $compensi,
@@ -112,6 +114,7 @@ class CalcoloImposte
             'add_regionale'          => $addReg,
             'add_comunale'           => $addCom,
             'cedolare'               => $cedolare,
+            'imu'                    => $imu,
             'totale_imposte'         => $totale,
             'netto'                  => $netto,
             'netto_mensile'          => round($netto / 12, 0),

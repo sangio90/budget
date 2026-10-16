@@ -137,6 +137,22 @@ class ProiezioneFiscale
         ];
     }
 
+    /**
+     * IMU dell'anno dallo scadenziario (acconto + saldo); se l'anno non ha righe IMU
+     * si usa l'ultimo anno precedente che le ha (l'IMU di solito non cambia).
+     */
+    public function imu(int $userId, int $anno): float
+    {
+        $perAnno = FiscalDeadline::where('user_id', $userId)->where('tributo', 'IMU')->where('anno_competenza', '<=', $anno)
+            ->get()->groupBy('anno_competenza');
+        if ($perAnno->isEmpty()) {
+            return 0.0;
+        }
+        $chiave = $perAnno->has($anno) ? $anno : $perAnno->keys()->max();
+
+        return round((float) $perAnno[$chiave]->sum('importo_previsto'), 2);
+    }
+
     /** Risultato completo di un anno di competenza (vedi CalcoloImposte). */
     public function risultato(int $userId, int $anno): array
     {
@@ -146,6 +162,7 @@ class ProiezioneFiscale
 
         $valori = $this->ipotesi($userId, $anno)['valori'];
         $valori['inps_deducibile'] = $this->inpsDeducibile($userId, $anno);
+        $valori['imu']             = $this->imu($userId, $anno);
 
         return $this->cacheRisultati[$userId][$anno] = $this->calcolo->calcola($valori, $this->parametri($userId, $anno));
     }

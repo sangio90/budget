@@ -123,7 +123,11 @@ class FiscaleTest extends TestCase
         $this->assertEquals(8068, $t[2026]['netto_mensile']);
         $this->assertEquals(7661, $t[2027]['netto_mensile']);
         $this->assertEquals(6962, $t[2028]['netto_mensile']);
-        $this->assertEquals([6090, 6064, 6762], [$t[2026]['accantonamento_mensile'], $t[2027]['accantonamento_mensile'], $t[2028]['accantonamento_mensile']]);
+        // come l'Excel (6.090 / 6.064 / 6.762) + IMU 1.400 l'anno (≈117 al mese; il 2028 eredita quella del 2027)
+        foreach ([2026 => 6090, 2027 => 6064, 2028 => 6762] as $a => $excel) {
+            $this->assertEqualsWithDelta($excel + 1400 / 12, $t[$a]['accantonamento_mensile'], 1.01);
+            $this->assertEqualsWithDelta(1400, $t[$a]['imu'], 0.01);
+        }
     }
 
     public function test_consuntivo_e_annualizzazione_dai_movimenti(): void

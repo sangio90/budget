@@ -164,7 +164,7 @@
         <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
             <div class="px-5 py-4 border-b border-slate-100">
                 <h2 class="font-semibold text-slate-800">Accantonamento consigliato {{ $anno }}</h2>
-                <p class="text-xs text-slate-400 mt-0.5">IVA + INPS + IRPEF a debito + addizionali + cedolare, di competenza dell'anno</p>
+                <p class="text-xs text-slate-400 mt-0.5">IVA + INPS + IRPEF a debito + addizionali + cedolare + IMU, di competenza dell'anno</p>
             </div>
             <div class="px-5 py-4 space-y-3 text-sm">
                 <div class="flex justify-between items-baseline">
@@ -179,7 +179,7 @@
                     <span class="text-slate-500">Obiettivo {{ $pc($accantonamento['obiettivo'], 0) }} dell'incassato</span>
                     <span class="font-semibold whitespace-nowrap text-primary-700">{{ $eu($accantonamento['obiettivo_mensile']) }} / mese</span>
                 </div>
-                <div class="text-xs text-slate-400">IVA annua considerata {{ $eu($risultato['iva_annua']) }} · risparmio mensile (netto − spese famiglia) {{ $eu($risultato['risparmio_mensile']) }}</div>
+                <div class="text-xs text-slate-400">IVA annua considerata {{ $eu($risultato['iva_annua']) }} · cedolare {{ $eu($risultato['cedolare']) }} · IMU {{ $eu($risultato['imu']) }} · risparmio mensile (netto − spese famiglia) {{ $eu($risultato['risparmio_mensile']) }}</div>
             </div>
         </div>
     </div>
